@@ -3,6 +3,7 @@ import 'package:percent_indicator/percent_indicator.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'moneye_add_expense.dart';
 import 'moneye_expenses.dart';
 import 'moneye_income.dart';
 import 'moneye_statistics.dart';
@@ -27,6 +28,10 @@ class _MoneyeState extends State<Moneye> {
     Navigator.push(context, MaterialPageRoute(builder: (context) => Statistics()));
   }
 
+  void _addExpense() {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => AddExpense()));
+  }
+
   void _clearPreferences() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     await preferences.clear();
@@ -40,13 +45,11 @@ class _MoneyeState extends State<Moneye> {
         ),
         body: Container(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               new ElevatedButton(
                   child: Text(
                     "Add Income",
                     style: TextStyle(
-                      color: Colors.red,
                       fontSize: 20,
                     ),
                   ),
@@ -59,14 +62,13 @@ class _MoneyeState extends State<Moneye> {
                   child: Text(
                     "Add Expense",
                     style: TextStyle(
-                      color: Colors.red,
                       fontSize: 20,
                     ),
                   ),
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
                   ),
-                  onPressed: ExpensesState.addExpenseValue), // elevated button
+                  onPressed: _addExpense), // elevated button
             ],
           ),
         ), //container

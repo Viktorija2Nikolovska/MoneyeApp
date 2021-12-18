@@ -17,12 +17,6 @@ class Expenses extends StatefulWidget {
 class _ExpensesState extends State<Expenses> {
   List<dynamic> expenses = [];
   List<dynamic> expenseCategories = [];
-  String selectedCategory = "";
-  //final valueController = TextEditingController();
-  final amountController = TextEditingController();
-  final categoryController = TextEditingController();
-  final dateController = TextEditingController();
-  DateTime date1 = DateTime.now();
 
   // === privremena implementacija ===
 
@@ -54,189 +48,189 @@ class _ExpensesState extends State<Expenses> {
     // _getExpenses();
   }
 
-  void _addCustomCategory() {
-    Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text('Add Category'),
-        ),
-        body: Form(
-          child: Scrollbar(
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: Card(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 400),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        ...[
-                          TextFormField(
-                            controller: categoryController,
-                            decoration: const InputDecoration(
-                              filled: true,
-                              hintText: 'Enter category',
-                              labelText: 'Expense Amount',
-                            ),
-                          ),
-                        ].expand(
-                          (widget) => [
-                            widget,
-                            const SizedBox(
-                              height: 24,
-                            )
-                          ],
-                        ),
-                        ElevatedButton(
-                            child: const Text('Submit'),
-                            onPressed: () {
-                              setState(() {
-                                expenseCategories.add({
-                                  "category": categoryController.text,
-                                });
-
-                                categoryController.text = "";
-                              });
-                            }),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ); //Scaffold
-    }));
-  } // addForm end
-
-  void addExpenseValue() {
-    Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text('Add Expense'),
-        ),
-        floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.add),
-          onPressed: _addCustomCategory,
-        ),
-        body: Form(
-          child: Scrollbar(
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: Card(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 400),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        ...[
-                          TextFormField(
-                            controller: amountController,
-                            decoration: const InputDecoration(
-                              filled: true,
-                              hintText: 'Enter amount',
-                              labelText: 'Expense Amount',
-                            ),
-                          ),
-                          Column(
-                            children: [
-                              DropdownButton(
-                                // setState(() {
-                                //   categoryController.text = selectedCategory;
-                                // }),
-
-                                //categoryController.text = selectedCategory,
-                                underline: Container(),
-                                hint: Center(
-                                    child: Text(
-                                  'Select the expense you love',
-                                  style: TextStyle(color: Colors.white),
-                                )),
-                                icon: Icon(
-                                  Icons.arrow_downward,
-                                  color: Colors.yellow,
-                                ),
-                                isExpanded: true,
-                                // The list of options
-                                items: expenses
-                                    .map((e) => DropdownMenuItem(
-                                          child: Container(
-                                            alignment: Alignment.centerLeft,
-                                            child: Text(
-                                              e,
-                                              style: TextStyle(fontSize: 18),
-                                            ),
-                                          ),
-                                          value: e,
-                                        ))
-                                    .toList(),
-
-                                //customize the item
-
-                                selectedItemBuilder: (BuildContext context) => expenses
-                                    .map((e) => Center(
-                                            child: Text(
-                                          e,
-                                          style: TextStyle(fontSize: 18, color: Colors.amber, fontStyle: FontStyle.italic, fontWeight: FontWeight.bold),
-                                        )))
-                                    .toList(),
-                              ),
-                            ],
-                          ),
-                          _FormDatePicker(
-                            date: date1,
-                            onChanged: (value) {
-                              setState(() {
-                                date1 = value;
-
-                                //date = "${date.toLocal().day}/${date.toLocal().month}/${date.toLocal().year}";
-                                String formatedDate = intl.DateFormat('yyyy-MM-dd').format(date1);
-
-                                dateController.text = formatedDate;
-                              });
-                            },
-                          ),
-                        ].expand(
-                          (widget) => [
-                            widget,
-                            const SizedBox(
-                              height: 24,
-                            )
-                          ],
-                        ),
-                        ElevatedButton(
-                            child: const Text('Submit'),
-                            onPressed: () {
-                              setState(() {
-                                expenses.add({
-                                  "amount": amountController.text,
-                                  "category": categoryController.text,
-                                  "date": dateController.text,
-                                });
-                                amountController.text = "";
-                                categoryController.text = "";
-                                dateController.text = "";
-                                date1 = DateTime.now();
-                              });
-                            }),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ); //Scaffold
-    }));
-  } // addForm end
+  // void _addCustomCategory() {
+  //   Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {
+  //     return Scaffold(
+  //       appBar: AppBar(
+  //         title: const Text('Add Category'),
+  //       ),
+  //       body: Form(
+  //         child: Scrollbar(
+  //           child: Align(
+  //             alignment: Alignment.topCenter,
+  //             child: Card(
+  //               child: SingleChildScrollView(
+  //                 padding: const EdgeInsets.all(16),
+  //                 child: ConstrainedBox(
+  //                   constraints: const BoxConstraints(maxWidth: 400),
+  //                   child: Column(
+  //                     mainAxisAlignment: MainAxisAlignment.center,
+  //                     crossAxisAlignment: CrossAxisAlignment.center,
+  //                     children: [
+  //                       ...[
+  //                         TextFormField(
+  //                           controller: categoryController,
+  //                           decoration: const InputDecoration(
+  //                             filled: true,
+  //                             hintText: 'Enter category',
+  //                             labelText: 'Expense Amount',
+  //                           ),
+  //                         ),
+  //                       ].expand(
+  //                         (widget) => [
+  //                           widget,
+  //                           const SizedBox(
+  //                             height: 24,
+  //                           )
+  //                         ],
+  //                       ),
+  //                       ElevatedButton(
+  //                           child: const Text('Submit'),
+  //                           onPressed: () {
+  //                             setState(() {
+  //                               expenseCategories.add({
+  //                                 "category": categoryController.text,
+  //                               });
+  //
+  //                               categoryController.text = "";
+  //                             });
+  //                           }),
+  //                     ],
+  //                   ),
+  //                 ),
+  //               ),
+  //             ),
+  //           ),
+  //         ),
+  //       ),
+  //     ); //Scaffold
+  //   }));
+  // } // addForm end
+  //
+  // void addExpenseValue() {
+  //   Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {
+  //     return Scaffold(
+  //       appBar: AppBar(
+  //         title: const Text('Add Expense'),
+  //       ),
+  //       floatingActionButton: FloatingActionButton(
+  //         child: Icon(Icons.add),
+  //         onPressed: _addCustomCategory,
+  //       ),
+  //       body: Form(
+  //         child: Scrollbar(
+  //           child: Align(
+  //             alignment: Alignment.topCenter,
+  //             child: Card(
+  //               child: SingleChildScrollView(
+  //                 padding: const EdgeInsets.all(16),
+  //                 child: ConstrainedBox(
+  //                   constraints: const BoxConstraints(maxWidth: 400),
+  //                   child: Column(
+  //                     mainAxisAlignment: MainAxisAlignment.center,
+  //                     crossAxisAlignment: CrossAxisAlignment.center,
+  //                     children: [
+  //                       ...[
+  //                         TextFormField(
+  //                           controller: amountController,
+  //                           decoration: const InputDecoration(
+  //                             filled: true,
+  //                             hintText: 'Enter amount',
+  //                             labelText: 'Expense Amount',
+  //                           ),
+  //                         ),
+  //                         Column(
+  //                           children: [
+  //                             DropdownButton(
+  //                               // setState(() {
+  //                               //   categoryController.text = selectedCategory;
+  //                               // }),
+  //
+  //                               //categoryController.text = selectedCategory,
+  //                               underline: Container(),
+  //                               hint: Center(
+  //                                   child: Text(
+  //                                 'Select the expense you love',
+  //                                 style: TextStyle(color: Colors.white),
+  //                               )),
+  //                               icon: Icon(
+  //                                 Icons.arrow_downward,
+  //                                 color: Colors.yellow,
+  //                               ),
+  //                               isExpanded: true,
+  //                               // The list of options
+  //                               items: expenses
+  //                                   .map((e) => DropdownMenuItem(
+  //                                         child: Container(
+  //                                           alignment: Alignment.centerLeft,
+  //                                           child: Text(
+  //                                             e,
+  //                                             style: TextStyle(fontSize: 18),
+  //                                           ),
+  //                                         ),
+  //                                         value: e,
+  //                                       ))
+  //                                   .toList(),
+  //
+  //                               //customize the item
+  //
+  //                               selectedItemBuilder: (BuildContext context) => expenses
+  //                                   .map((e) => Center(
+  //                                           child: Text(
+  //                                         e,
+  //                                         style: TextStyle(fontSize: 18, color: Colors.amber, fontStyle: FontStyle.italic, fontWeight: FontWeight.bold),
+  //                                       )))
+  //                                   .toList(),
+  //                             ),
+  //                           ],
+  //                         ),
+  //                         _FormDatePicker(
+  //                           date: date1,
+  //                           onChanged: (value) {
+  //                             setState(() {
+  //                               date1 = value;
+  //
+  //                               //date = "${date.toLocal().day}/${date.toLocal().month}/${date.toLocal().year}";
+  //                               String formatedDate = intl.DateFormat('yyyy-MM-dd').format(date1);
+  //
+  //                               dateController.text = formatedDate;
+  //                             });
+  //                           },
+  //                         ),
+  //                       ].expand(
+  //                         (widget) => [
+  //                           widget,
+  //                           const SizedBox(
+  //                             height: 24,
+  //                           )
+  //                         ],
+  //                       ),
+  //                       ElevatedButton(
+  //                           child: const Text('Submit'),
+  //                           onPressed: () {
+  //                             setState(() {
+  //                               expenses.add({
+  //                                 "amount": amountController.text,
+  //                                 "category": categoryController.text,
+  //                                 "date": dateController.text,
+  //                               });
+  //                               amountController.text = "";
+  //                               categoryController.text = "";
+  //                               dateController.text = "";
+  //                               date1 = DateTime.now();
+  //                             });
+  //                           }),
+  //                     ],
+  //                   ),
+  //                 ),
+  //               ),
+  //             ),
+  //           ),
+  //         ),
+  //       ),
+  //     ); //Scaffold
+  //   }));
+  // } // addForm end
 
   // Koga ke se dodava nov expense, ke ima povik kon funkcija od ovoj widget koja ke prima tri parametri (amount, category i date) i istata ke dodava nova stavka vo listata, po sto ke
   // se povika _setExpenses() za perzistiranje vo memorija. Togas ke se trgne povikot do _getExpenses od _setExpenses funkcijata, a _getExpenses() ke se povikuva samo vo initState().
