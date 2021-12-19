@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'moneye_add_expense.dart';
+import 'moneye_choose.dart';
 import 'moneye_expenses.dart';
 import 'moneye_income.dart';
 import 'moneye_statistics.dart';
@@ -28,64 +29,13 @@ class _MoneyeState extends State<Moneye> {
     Navigator.push(context, MaterialPageRoute(builder: (context) => Statistics()));
   }
 
-  void _addExpense() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => AddExpense()));
-  }
-
   void _clearPreferences() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     await preferences.clear();
   }
 
   void _chooseBetween() {
-    Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text("Moneye", style: TextStyle(fontSize: 26)),
-        ),
-        body: Container(
-          child: Column(
-            children: [
-              new ElevatedButton(
-                  child: Text(
-                    "Add Income",
-                    style: TextStyle(
-                      fontSize: 20,
-                    ),
-                  ),
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
-                  ),
-                  onPressed: null), // elevated button
-
-              new ElevatedButton(
-                  child: Text(
-                    "Add Expense",
-                    style: TextStyle(
-                      fontSize: 20,
-                    ),
-                  ),
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
-                  ),
-                  onPressed: _addExpense), // elevated button
-            ],
-          ),
-        ), //container
-
-        //body:Column(
-
-//           TextButton(
-//   style: ButtonStyle(
-//     foregroundColor: MaterialStateProperty.all<Color>(Colors.blue),
-//   ),
-//   onPressed: null,
-//   child: Text('addIncome'),
-// ),
-
-//);
-      );
-    }));
+    Navigator.push(context, MaterialPageRoute(builder: (context) => MoneyeChoose()));
   }
 
   @override

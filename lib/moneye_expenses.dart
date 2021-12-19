@@ -10,11 +10,11 @@ import 'moneye_home.dart';
 class Expenses extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return _ExpensesState();
+    return ExpensesState();
   }
 }
 
-class _ExpensesState extends State<Expenses> {
+class ExpensesState extends State<Expenses> {
   List<dynamic> expenses = [];
   List<dynamic> expenseCategories = [];
 
@@ -38,6 +38,10 @@ class _ExpensesState extends State<Expenses> {
     }
   }
 
+  // static void addExpense(String text1, String text2, String text3) {
+  //   expenses.add(value)
+  // }
+
   void _setExpenses() async {
     // ke se povikuva sekoj pat koga ke se dodade nov expense (noviot expense prvo ke se dodade vo listata, pa potoa ke se zacuva vo memorija)
     SharedPreferences preferences = await SharedPreferences.getInstance();
@@ -47,190 +51,6 @@ class _ExpensesState extends State<Expenses> {
     preferences.setString("expenses", jsonEncode(expenses));
     // _getExpenses();
   }
-
-  // void _addCustomCategory() {
-  //   Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {
-  //     return Scaffold(
-  //       appBar: AppBar(
-  //         title: const Text('Add Category'),
-  //       ),
-  //       body: Form(
-  //         child: Scrollbar(
-  //           child: Align(
-  //             alignment: Alignment.topCenter,
-  //             child: Card(
-  //               child: SingleChildScrollView(
-  //                 padding: const EdgeInsets.all(16),
-  //                 child: ConstrainedBox(
-  //                   constraints: const BoxConstraints(maxWidth: 400),
-  //                   child: Column(
-  //                     mainAxisAlignment: MainAxisAlignment.center,
-  //                     crossAxisAlignment: CrossAxisAlignment.center,
-  //                     children: [
-  //                       ...[
-  //                         TextFormField(
-  //                           controller: categoryController,
-  //                           decoration: const InputDecoration(
-  //                             filled: true,
-  //                             hintText: 'Enter category',
-  //                             labelText: 'Expense Amount',
-  //                           ),
-  //                         ),
-  //                       ].expand(
-  //                         (widget) => [
-  //                           widget,
-  //                           const SizedBox(
-  //                             height: 24,
-  //                           )
-  //                         ],
-  //                       ),
-  //                       ElevatedButton(
-  //                           child: const Text('Submit'),
-  //                           onPressed: () {
-  //                             setState(() {
-  //                               expenseCategories.add({
-  //                                 "category": categoryController.text,
-  //                               });
-  //
-  //                               categoryController.text = "";
-  //                             });
-  //                           }),
-  //                     ],
-  //                   ),
-  //                 ),
-  //               ),
-  //             ),
-  //           ),
-  //         ),
-  //       ),
-  //     ); //Scaffold
-  //   }));
-  // } // addForm end
-  //
-  // void addExpenseValue() {
-  //   Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {
-  //     return Scaffold(
-  //       appBar: AppBar(
-  //         title: const Text('Add Expense'),
-  //       ),
-  //       floatingActionButton: FloatingActionButton(
-  //         child: Icon(Icons.add),
-  //         onPressed: _addCustomCategory,
-  //       ),
-  //       body: Form(
-  //         child: Scrollbar(
-  //           child: Align(
-  //             alignment: Alignment.topCenter,
-  //             child: Card(
-  //               child: SingleChildScrollView(
-  //                 padding: const EdgeInsets.all(16),
-  //                 child: ConstrainedBox(
-  //                   constraints: const BoxConstraints(maxWidth: 400),
-  //                   child: Column(
-  //                     mainAxisAlignment: MainAxisAlignment.center,
-  //                     crossAxisAlignment: CrossAxisAlignment.center,
-  //                     children: [
-  //                       ...[
-  //                         TextFormField(
-  //                           controller: amountController,
-  //                           decoration: const InputDecoration(
-  //                             filled: true,
-  //                             hintText: 'Enter amount',
-  //                             labelText: 'Expense Amount',
-  //                           ),
-  //                         ),
-  //                         Column(
-  //                           children: [
-  //                             DropdownButton(
-  //                               // setState(() {
-  //                               //   categoryController.text = selectedCategory;
-  //                               // }),
-  //
-  //                               //categoryController.text = selectedCategory,
-  //                               underline: Container(),
-  //                               hint: Center(
-  //                                   child: Text(
-  //                                 'Select the expense you love',
-  //                                 style: TextStyle(color: Colors.white),
-  //                               )),
-  //                               icon: Icon(
-  //                                 Icons.arrow_downward,
-  //                                 color: Colors.yellow,
-  //                               ),
-  //                               isExpanded: true,
-  //                               // The list of options
-  //                               items: expenses
-  //                                   .map((e) => DropdownMenuItem(
-  //                                         child: Container(
-  //                                           alignment: Alignment.centerLeft,
-  //                                           child: Text(
-  //                                             e,
-  //                                             style: TextStyle(fontSize: 18),
-  //                                           ),
-  //                                         ),
-  //                                         value: e,
-  //                                       ))
-  //                                   .toList(),
-  //
-  //                               //customize the item
-  //
-  //                               selectedItemBuilder: (BuildContext context) => expenses
-  //                                   .map((e) => Center(
-  //                                           child: Text(
-  //                                         e,
-  //                                         style: TextStyle(fontSize: 18, color: Colors.amber, fontStyle: FontStyle.italic, fontWeight: FontWeight.bold),
-  //                                       )))
-  //                                   .toList(),
-  //                             ),
-  //                           ],
-  //                         ),
-  //                         _FormDatePicker(
-  //                           date: date1,
-  //                           onChanged: (value) {
-  //                             setState(() {
-  //                               date1 = value;
-  //
-  //                               //date = "${date.toLocal().day}/${date.toLocal().month}/${date.toLocal().year}";
-  //                               String formatedDate = intl.DateFormat('yyyy-MM-dd').format(date1);
-  //
-  //                               dateController.text = formatedDate;
-  //                             });
-  //                           },
-  //                         ),
-  //                       ].expand(
-  //                         (widget) => [
-  //                           widget,
-  //                           const SizedBox(
-  //                             height: 24,
-  //                           )
-  //                         ],
-  //                       ),
-  //                       ElevatedButton(
-  //                           child: const Text('Submit'),
-  //                           onPressed: () {
-  //                             setState(() {
-  //                               expenses.add({
-  //                                 "amount": amountController.text,
-  //                                 "category": categoryController.text,
-  //                                 "date": dateController.text,
-  //                               });
-  //                               amountController.text = "";
-  //                               categoryController.text = "";
-  //                               dateController.text = "";
-  //                               date1 = DateTime.now();
-  //                             });
-  //                           }),
-  //                     ],
-  //                   ),
-  //                 ),
-  //               ),
-  //             ),
-  //           ),
-  //         ),
-  //       ),
-  //     ); //Scaffold
-  //   }));
-  // } // addForm end
 
   // Koga ke se dodava nov expense, ke ima povik kon funkcija od ovoj widget koja ke prima tri parametri (amount, category i date) i istata ke dodava nova stavka vo listata, po sto ke
   // se povika _setExpenses() za perzistiranje vo memorija. Togas ke se trgne povikot do _getExpenses od _setExpenses funkcijata, a _getExpenses() ke se povikuva samo vo initState().
@@ -301,68 +121,5 @@ class _ExpensesState extends State<Expenses> {
             );
           },
         ));
-  }
-}
-
-class _FormDatePicker extends StatefulWidget {
-  final DateTime date;
-  final ValueChanged<DateTime> onChanged;
-
-  const _FormDatePicker({
-    this.date,
-    this.onChanged,
-  });
-
-  @override
-  _FormDatePickerState createState() => _FormDatePickerState();
-}
-
-class _FormDatePickerState extends State<_FormDatePicker> {
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Text(
-              'Date',
-              style: Theme.of(context).textTheme.bodyText1,
-            ),
-            Text(
-              intl.DateFormat.yMd().format(widget.date),
-              style: Theme.of(context).textTheme.subtitle1,
-            ),
-          ],
-        ),
-        TextButton(
-          child: const Text('Edit'),
-          onPressed: () async {
-            var newDate = await showDatePicker(
-              context: context,
-              initialDate: widget.date,
-              firstDate: DateTime(1900),
-              lastDate: DateTime(2100),
-            );
-
-            // Don't change the date if the date picker returns null.
-            if (newDate == null) {
-              return;
-            }
-            // onChanged:
-            // (value) {
-            //   setState(() {
-            //     newDate = value;
-            //   });
-            // };
-
-            widget.onChanged(newDate);
-          },
-        ),
-      ],
-    );
   }
 }
