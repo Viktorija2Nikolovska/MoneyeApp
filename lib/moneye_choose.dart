@@ -14,6 +14,9 @@ class _MoneyeChooseState extends State<MoneyeChoose> {
   void _addExpense() {
     Navigator.push(context, MaterialPageRoute(builder: (context) => AddExpense()));
   }
+  //  void _addIncome() {
+  //   Navigator.push(context, MaterialPageRoute(builder: (context) => AddIncome()));
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +37,7 @@ class _MoneyeChooseState extends State<MoneyeChoose> {
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
                 ),
-                onPressed: null), // elevated button
+                onPressed: null), 
 
             new ElevatedButton(
                 child: Text(
@@ -46,22 +49,12 @@ class _MoneyeChooseState extends State<MoneyeChoose> {
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
                 ),
-                onPressed: _addExpense), // elevated button
+                onPressed: _addExpense), 
           ],
         ),
-      ), //container
+      ), 
 
-      //body:Column(
 
-//           TextButton(
-//   style: ButtonStyle(
-//     foregroundColor: MaterialStateProperty.all<Color>(Colors.blue),
-//   ),
-//   onPressed: null,
-//   child: Text('addIncome'),
-// ),
-
-//);
     );
   }
 }

@@ -7,6 +7,9 @@ import 'package:intl/intl.dart' as intl;
 import 'dart:core';
 import 'moneye_home.dart';
 
+typedef ExpensesAddCallback = void Function(
+    String amount, String category, String date);
+
 class Expenses extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -50,6 +53,12 @@ class ExpensesState extends State<Expenses> {
     }
     preferences.setString("expenses", jsonEncode(expenses));
     // _getExpenses();
+  }
+
+  void addExpense(String amount, String category, String date) {
+    setState(() {
+      expenses.add({"amount": amount, "category": category, "date": date});
+    });
   }
 
   // Koga ke se dodava nov expense, ke ima povik kon funkcija od ovoj widget koja ke prima tri parametri (amount, category i date) i istata ke dodava nova stavka vo listata, po sto ke
@@ -105,11 +114,20 @@ class ExpensesState extends State<Expenses> {
                   ListTile(
                       minVerticalPadding: 15,
                       leading: Icon(Icons.access_time_filled, size: 35),
-                      title: Container(margin: EdgeInsets.only(bottom: 10), child: Text(expenses[index]["amount"].toString(), style: TextStyle(fontSize: 27, fontWeight: FontWeight.bold))),
-                      subtitle: Text(expenses[index]["category"].toString() + "\n" + expenses[index]["date"].toString(), style: TextStyle(fontSize: 21)),
+                      title: Container(
+                          margin: EdgeInsets.only(bottom: 10),
+                          child: Text(expenses[index]["amount"].toString(),
+                              style: TextStyle(
+                                  fontSize: 27, fontWeight: FontWeight.bold))),
+                      subtitle: Text(
+                          expenses[index]["category"].toString() +
+                              "\n" +
+                              expenses[index]["date"].toString(),
+                          style: TextStyle(fontSize: 21)),
                       trailing: Container(
                           child: IconButton(
-                              icon: Icon(Icons.delete, color: Colors.red, size: 35),
+                              icon: Icon(Icons.delete,
+                                  color: Colors.red, size: 35),
                               onPressed: () {
                                 setState(() {
                                   expenses.removeAt(index);
