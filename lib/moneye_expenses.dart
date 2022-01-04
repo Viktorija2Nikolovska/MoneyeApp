@@ -2,13 +2,13 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:planner/moneye_add_expense.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart' as intl;
 import 'dart:core';
 import 'moneye_home.dart';
 
-typedef ExpensesAddCallback = void Function(
-    String amount, String category, String date);
+typedef ExpensesAddCallback = void Function(String amount, String category, String date);
 
 class Expenses extends StatefulWidget {
   @override
@@ -55,10 +55,12 @@ class ExpensesState extends State<Expenses> {
     // _getExpenses();
   }
 
-  void addExpense(String amount, String category, String date) {
+  void _addExpense(String amount, String category, String date) {
     setState(() {
       expenses.add({"amount": amount, "category": category, "date": date});
     });
+
+    _setExpenses();
   }
 
   // Koga ke se dodava nov expense, ke ima povik kon funkcija od ovoj widget koja ke prima tri parametri (amount, category i date) i istata ke dodava nova stavka vo listata, po sto ke
@@ -87,6 +89,10 @@ class ExpensesState extends State<Expenses> {
 
   // ====== ======
 
+  void _showForm() {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => AddExpense(_addExpense)));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -102,6 +108,10 @@ class ExpensesState extends State<Expenses> {
                   });
                 })
           ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.add),
+          onPressed: _showForm,
         ),
         body: ListView.builder(
           itemCount: expenses.length,

@@ -9,10 +9,13 @@ import 'dart:core';
 import 'moneye_expenses.dart';
 import 'moneye_home.dart';
 import 'moneye_add_expense.dart';
+
 class AddExpenseCategory extends StatefulWidget {
 
   final AddCustomExpenseCategory categoryCallback;
+
   const AddExpenseCategory(this.categoryCallback);
+
   @override
   State<StatefulWidget> createState() {
     return _AddExpenseCategoryState(categoryCallback);
@@ -24,17 +27,52 @@ class _AddExpenseCategoryState extends State<AddExpenseCategory> {
  final expenseCategoryController = TextEditingController();
 
  AddCustomExpenseCategory categoryCallback;
-  _AddExpenseCategoryState(this.categoryCallback);
+
+ _AddExpenseCategoryState(this.categoryCallback);
+
+ @override
+  void initState() {
+    super.initState();
+
+    // ..
+  }
+
  void _submitExpenseCategory() {
    categoryCallback(expenseCategoryController.text);
-    {
-      setState(() {
-        
 
-        expenseCategoryController.text = "";
-      });
-    }
+   setState(() {
+     expenseCategoryController.text = "";
+   });
+
+   ScaffoldMessenger.of(context).showSnackBar(
+     const SnackBar(content: Text('Category successfully added.')),
+   );
   }
+
+ // void _getExpenses() async {
+ //   SharedPreferences preferences = await SharedPreferences.getInstance();
+ //   if (preferences.containsKey("expenses")) {
+ //     String jsonExpenses = preferences.getString("expenses");
+ //     var listExpenses = jsonDecode(jsonExpenses);
+ //     setState(() {
+ //       expenses = listExpenses;
+ //     });
+ //   }
+ // }
+ //
+ // // static void addExpense(String text1, String text2, String text3) {
+ // //   expenses.add(value)
+ // // }
+ //
+ // void _setExpenses() async {
+ //   // ke se povikuva sekoj pat koga ke se dodade nov expense (noviot expense prvo ke se dodade vo listata, pa potoa ke se zacuva vo memorija)
+ //   SharedPreferences preferences = await SharedPreferences.getInstance();
+ //   if (preferences.containsKey("expenses")) {
+ //     preferences.remove("expenses");
+ //   }
+ //   preferences.setString("expenses", jsonEncode(expenses));
+ //   // _getExpenses();
+ // }
 
  @override
   Widget build(BuildContext context) {

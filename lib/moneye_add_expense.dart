@@ -9,38 +9,40 @@ import 'moneye_expenses.dart';
 import 'moneye_home.dart';
 import 'add_expense_category.dart';
 
+typedef AddCustomExpenseCategory = void Function(String category);
 
-typedef AddCustomExpenseCategory =void Function(String category);
 class AddExpense extends StatefulWidget {
- 
+
+  final ExpensesAddCallback expensesCallback;
+
+  const AddExpense(this.expensesCallback);
+
   @override
   State<StatefulWidget> createState() {
-    return _AddExpenseState();
+    return _AddExpenseState(this.expensesCallback);
   }
 }
 
 class _AddExpenseState extends State<AddExpense> {
-  ExpensesAddCallback callback;
+  ExpensesAddCallback expensesCallback;
  
   List<String> expenseCategories = ["Food", "Clothes", "Petrol", "Gym"];
-  
 
   String selectedCategory = "Food";
 
   final amountController = TextEditingController();
-  final dateController = TextEditingController();
- 
 
   DateTime createdOn = DateTime.now();
+  String formattedDate = "";
 
+  _AddExpenseState(this.expensesCallback);
 
-void _addCustomExpenseCategory() {
+  void _addCustomExpenseCategory() {
     Navigator.push(context, MaterialPageRoute(builder: (context) => AddExpenseCategory(addCustomExpenseCategory)));
   }
 
   void addCustomExpenseCategory(String category){
     setState(() {
-      
       expenseCategories.add(
           category,
         );
@@ -48,14 +50,24 @@ void _addCustomExpenseCategory() {
   }
 
   void _onSubmit() {
-    callback(amountController.text, selectedCategory, dateController.text);
+    if(formattedDate == "") {
+      setState(() {
+        formattedDate = intl.DateFormat('dd/MM/yyyy kk:mm').format(createdOn);
+      });
+    }
+
+    expensesCallback(amountController.text, selectedCategory, formattedDate);
 
     setState(() {
       amountController.text = "";
       selectedCategory = "Food";
-      dateController.text = "";
       createdOn = DateTime.now();
+      formattedDate = intl.DateFormat('dd/MM/yyyy kk:mm').format(createdOn);
     });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Category successfully added.')),
+    );
   }
 
   @override
@@ -116,13 +128,11 @@ void _addCustomExpenseCategory() {
                             date: createdOn,
                             onChanged: (value) {
                               setState(() {
-                                createdOn = value;
-
-                               
-
-                                String formattedDate = intl.DateFormat('yyyy-MM-dd').format(createdOn);
-
-                                dateController.text = formattedDate;
+                                setState(() {
+                                  createdOn = value;
+                                  formattedDate =
+                                      intl.DateFormat('dd/MM/yyyy kk:mm').format(createdOn);
+                                });
                               });
                             },
                           ),

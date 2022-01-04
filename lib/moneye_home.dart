@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'moneye_add_expense.dart';
-import 'moneye_choose.dart';
 import 'moneye_expenses.dart';
 import 'moneye_income.dart';
 import 'moneye_statistics.dart';
@@ -32,10 +31,6 @@ class _MoneyeState extends State<Moneye> {
   void _clearPreferences() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     await preferences.clear();
-  }
-
-  void _chooseBetween() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => MoneyeChoose()));
   }
 
   @override
@@ -72,10 +67,6 @@ class _MoneyeState extends State<Moneye> {
               ),
             )
           ],
-        ),
-        floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.add),
-          onPressed: _chooseBetween,
         ),
         body: Container(
           padding: EdgeInsets.all(25),
