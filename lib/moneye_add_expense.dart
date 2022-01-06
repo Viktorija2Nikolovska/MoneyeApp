@@ -27,7 +27,7 @@ class AddExpense extends StatefulWidget {
 class _AddExpenseState extends State<AddExpense> {
   ExpensesAddCallback expensesCallback;
  
-  List<String> expenseCategories = ["Food", "Clothes", "Petrol", "Gym"];
+  List<dynamic> expenseCategories = ["Food", "Clothes", "Petrol", "Gym"];
 
   String selectedCategory = "Food";
 
@@ -39,16 +39,12 @@ class _AddExpenseState extends State<AddExpense> {
   _AddExpenseState(this.expensesCallback);
 
   void _addCustomExpenseCategory() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => AddExpenseCategory(addCustomExpenseCategory)));
+    Navigator.push(context, MaterialPageRoute(builder: (context) => AddExpenseCategory(addCustomExpenseCategory, expenseCategories)));
   }
 
  @override
   void initState() {
     super.initState();
-    _setExpenseCategories();
-    _getExpenseCategories();
-
-
   }
 
   void addCustomExpenseCategory(String category){
@@ -57,6 +53,7 @@ class _AddExpenseState extends State<AddExpense> {
           category,
         );
     });
+
     _setExpenseCategories();
   }
 
@@ -91,9 +88,7 @@ class _AddExpenseState extends State<AddExpense> {
      });
    }
  }
- 
 
- 
  void _setExpenseCategories() async {
    // ke se povikuva sekoj pat koga ke se dodade nov expense (noviot expense prvo ke se dodade vo listata, pa potoa ke se zacuva vo memorija)
    SharedPreferences preferences = await SharedPreferences.getInstance();
@@ -104,42 +99,9 @@ class _AddExpenseState extends State<AddExpense> {
    // _getExpenses();
  }
 
- void _listExpenseCategories(){
-    //  Widget _buildBody() {
-    // return 
-    ListView.builder(
-      itemCount: expenseCategories.length,
-      itemBuilder: (context, index) {
-        return Card(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            // po vertikalna oska, bidejki e kolona, kolku da bide istata dolga. Ako se stavi min, dolzinata ke bide ednakva na taa dolzina sto ja zafakjaat decata (children)
-            children: [
-              ListTile(
-                  leading: Icon(Icons.access_time_filled),
-                  title: Text(expenseCategories[index],
-                      style:
-                          TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-                 
-                  trailing: Container(
-                      child: IconButton(
-                          icon: Icon(Icons.delete, color: Colors.red),
-                          onPressed: () {
-                            setState(() {
-                              expenseCategories.removeAt(index);
-                            });
-                            _setExpenseCategories();
-                          }))),
-            ],
-          ),
-        );
-      },
-    );
-  // }
-   }
-
   @override
   Widget build(BuildContext context) {
+    _getExpenseCategories();
     return Scaffold(
         appBar: AppBar(
           title: const Text('Add Expense'),
@@ -168,7 +130,7 @@ class _AddExpenseState extends State<AddExpense> {
                           ),
                           Column(
                             children: [
-                              DropdownButton<String>(
+                              DropdownButton<dynamic>(
                                 value: selectedCategory,
                                 icon: const Icon(Icons.arrow_downward),
                                 elevation: 16,
@@ -177,13 +139,13 @@ class _AddExpenseState extends State<AddExpense> {
                                   height: 2,
                                   color: Colors.deepPurpleAccent,
                                 ),
-                                onChanged: (String newValue) {
+                                onChanged: (dynamic newValue) {
                                   setState(() {
                                     selectedCategory = newValue;
                                   });
                                 },
                                 items: expenseCategories
-                                    .map<DropdownMenuItem<String>>((String value) {
+                                    .map<DropdownMenuItem<dynamic>>((dynamic value) {
                                   return DropdownMenuItem<String>(
                                     value: value,
                                     child: Text(value),

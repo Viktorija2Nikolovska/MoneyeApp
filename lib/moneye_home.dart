@@ -28,14 +28,8 @@ class _MoneyeState extends State<Moneye> {
     Navigator.push(context, MaterialPageRoute(builder: (context) => Statistics()));
   }
 
-  void _clearPreferences() async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    await preferences.clear();
-  }
-
   @override
   Widget build(BuildContext context) {
-    _clearPreferences();
     return Scaffold(
         appBar: AppBar(
           title: Text("Moneye", style: TextStyle(fontSize: 26)),
@@ -135,5 +129,10 @@ class _MoneyeState extends State<Moneye> {
             ],
           ),
         ));
+  }
+
+  void _clearPreferences() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    await preferences.clear();
   }
 }

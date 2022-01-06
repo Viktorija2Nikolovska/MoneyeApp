@@ -25,12 +25,9 @@ class ExpensesState extends State<Expenses> {
 
   @override
   void initState() {
-  
-    _setExpenses();
-    _getExpenses();
       super.initState();
-    
-    
+
+      _getExpenses();
   }
 
   void _getExpenses() async {
@@ -38,13 +35,12 @@ class ExpensesState extends State<Expenses> {
     if (preferences.containsKey("expenses")) {
       String jsonExpenses = preferences.getString("expenses");
       var listExpenses = jsonDecode(jsonExpenses);
+      print(listExpenses);
       setState(() {
         expenses = listExpenses;
       });
     }
   }
-
-
 
   void _setExpenses() async {
     // ke se povikuva sekoj pat koga ke se dodade nov expense (noviot expense prvo ke se dodade vo listata, pa potoa ke se zacuva vo memorija)
@@ -105,7 +101,8 @@ class ExpensesState extends State<Expenses> {
                 onPressed: () {
                   setState(() {
                     expenses = [];
-                    // _setExpenses();
+
+                    _setExpenses();
                   });
                 })
           ],
@@ -142,7 +139,8 @@ class ExpensesState extends State<Expenses> {
                               onPressed: () {
                                 setState(() {
                                   expenses.removeAt(index);
-                                  // _setExpenses();
+
+                                  _setExpenses();
                                 });
                               }))),
                 ],
