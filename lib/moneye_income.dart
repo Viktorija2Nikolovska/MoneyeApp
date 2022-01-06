@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'add_income.dart';
 
 typedef IncomeAddCallback = void Function(
-    String amount, String workplace, String position);
+    String amount, String workplace, String position,String date);
 
 class Income extends StatefulWidget {
   @override
@@ -48,11 +48,7 @@ class _IncomeState extends State<Income> {
   //     "workplace": "Freelance",
   //     "date": DateFormat("dd/MM/yyyy kk:mm").format(DateTime.now())
   //   },
-  //   {
-  //     "amount": "500EUR",
-  //     "workplace": "Freelance",
-  //     "date": DateFormat("dd/MM/yyyy kk:mm").format(DateTime.now())
-  //   }
+
   // ];
 
   @override
@@ -62,13 +58,16 @@ class _IncomeState extends State<Income> {
     _getIncomeList();
   }
 
-  void _addIncome(String amount, String workplace, String position) {
+  void _addIncome(String amount, String workplace, String position,String date) {
     setState(() {
       incomeSources.add(
           {"amount": amount, "workplace": workplace, "position": position});
+          incomeList.add({"amount": amount, "workplace": workplace, "date":date});
     });
 
+
     _setIncomeSources();
+    _setIncomeList();
   }
 
   void _showAddIncomeForm() {

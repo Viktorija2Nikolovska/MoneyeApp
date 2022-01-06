@@ -28,11 +28,11 @@ class _AddIncomeState extends State<AddIncome> {
   final amountController = TextEditingController();
   final workplaceController = TextEditingController();
   final positionController = TextEditingController();
-
+ String date= DateFormat("dd/MM/yyyy kk:mm").format(DateTime.now());
  
 
   void _onSubmit() {
-    incomeCallback(amountController.text,workplaceController.text,positionController.text);
+    incomeCallback(amountController.text,workplaceController.text,positionController.text,date);
 
     setState(() {
 
@@ -40,6 +40,7 @@ class _AddIncomeState extends State<AddIncome> {
      
       workplaceController.text = "";
            positionController.text = "";
+            date= DateFormat("dd/MM/yyyy kk:mm").format(DateTime.now());
 
     });
     ScaffoldMessenger.of(context).showSnackBar(
