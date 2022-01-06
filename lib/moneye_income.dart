@@ -3,6 +3,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'add_income.dart';
+
+typedef IncomeAddCallback = void Function(
+    String amount, String workplace, String position);
 
 class Income extends StatefulWidget {
   @override
@@ -12,50 +16,64 @@ class Income extends StatefulWidget {
 }
 
 class _IncomeState extends State<Income> {
-  // List<dynamic> incomeSources = [];
-  // List<dynamic> incomeList = [];
+  List<dynamic> incomeSources = [];
+  List<dynamic> incomeList = [];
 
-  List<dynamic> incomeSources = [
-    {
-      "amount": "700EUR",
-      "workplace": "Netcetera",
-      "position": "Software Engineer"
-    },
-    {
-      "amount": "500EUR",
-      "workplace": "Freelance",
-      "position": "Ethical Hacker"
-    }
-  ];
+  // List<dynamic> incomeSources = [
+  //   {
+  //     "amount": "700EUR",
+  //     "workplace": "Netcetera",
+  //     "position": "Software Engineer"
+  //   },
+  //   {
+  //     "amount": "500EUR",
+  //     "workplace": "Freelance",
+  //     "position": "Ethical Hacker"
+  //   }
+  // ];
 
-  List<dynamic> incomeList = [
-    {
-      "amount": "700EUR",
-      "workplace": "Netcetera",
-      "date": DateFormat("dd/MM/yyyy kk:mm").format(DateTime.now())
-    },
-    {
-      "amount": "700EUR",
-      "workplace": "Netcetera",
-      "date": DateFormat("dd/MM/yyyy kk:mm").format(DateTime.now())
-    },
-    {
-      "amount": "500EUR",
-      "workplace": "Freelance",
-      "date": DateFormat("dd/MM/yyyy kk:mm").format(DateTime.now())
-    },
-    {
-      "amount": "500EUR",
-      "workplace": "Freelance",
-      "date": DateFormat("dd/MM/yyyy kk:mm").format(DateTime.now())
-    }
-  ];
+  // List<dynamic> incomeList = [
+  //   {
+  //     "amount": "700EUR",
+  //     "workplace": "Netcetera",
+  //     "date": DateFormat("dd/MM/yyyy kk:mm").format(DateTime.now())
+  //   },
+  //   {
+  //     "amount": "700EUR",
+  //     "workplace": "Netcetera",
+  //     "date": DateFormat("dd/MM/yyyy kk:mm").format(DateTime.now())
+  //   },
+  //   {
+  //     "amount": "500EUR",
+  //     "workplace": "Freelance",
+  //     "date": DateFormat("dd/MM/yyyy kk:mm").format(DateTime.now())
+  //   },
+  //   {
+  //     "amount": "500EUR",
+  //     "workplace": "Freelance",
+  //     "date": DateFormat("dd/MM/yyyy kk:mm").format(DateTime.now())
+  //   }
+  // ];
 
   @override
   void initState() {
-    // _getIncomeSources();
-    // _getIncomeList();
     super.initState();
+    _getIncomeSources();
+    _getIncomeList();
+  }
+
+  void _addIncome(String amount, String workplace, String position) {
+    setState(() {
+      incomeSources.add(
+          {"amount": amount, "workplace": workplace, "position": position});
+    });
+
+    _setIncomeSources();
+  }
+
+  void _showAddIncomeForm() {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => AddIncome(_addIncome)));
   }
 
   void _getIncomeSources() async {
@@ -101,6 +119,10 @@ class _IncomeState extends State<Income> {
     return Scaffold(
         appBar: AppBar(
             title: Text("Income information", style: TextStyle(fontSize: 27))),
+                  floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.add),
+          onPressed: _showAddIncomeForm,
+        ),
         body: Column(mainAxisSize: MainAxisSize.min, children: [
           Container(
               margin: EdgeInsets.only(top: 25),
@@ -137,7 +159,7 @@ class _IncomeState extends State<Income> {
                                   onPressed: () {
                                     setState(() {
                                       incomeSources.removeAt(index);
-                                      // _setIncomeSources();
+                                      _setIncomeSources();
                                     });
                                   })))
                     ]));
@@ -146,25 +168,25 @@ class _IncomeState extends State<Income> {
               margin: EdgeInsets.only(top: 50),
               padding: EdgeInsets.only(bottom: 10, left: 15, right: 20),
               child: Align(
-                  alignment: Alignment.topLeft,
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text("Income logs",
-                            style: TextStyle(
-                                fontSize: 24, fontWeight: FontWeight.bold)),
-                        ElevatedButton(
-                            child:
-                                Text("CLEAR", style: TextStyle(fontSize: 16)),
-                            onPressed: () {
-                              setState(() {
-                                incomeList = [];
-                                // _setIncomeList();
-                              });
-                            },
-                            style:
-                                ElevatedButton.styleFrom(primary: Colors.green))
-                      ]))),
+                alignment: Alignment.topLeft,
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text("Income logs",
+                          style: TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.bold)),
+                      ElevatedButton(
+                          child: Text("CLEAR", style: TextStyle(fontSize: 16)),
+                          onPressed: () {
+                            setState(() {
+                              incomeList = [];
+                              _setIncomeList();
+                            });
+                          },
+                          style:
+                              ElevatedButton.styleFrom(primary: Colors.green))
+                    ]),
+              )),
           SizedBox(
               height: MediaQuery.of(context).size.height / 2,
               child: ListView.builder(
@@ -192,7 +214,7 @@ class _IncomeState extends State<Income> {
                                   onPressed: () {
                                     setState(() {
                                       incomeList.removeAt(index);
-                                      // _setIncomeList();
+                                      _setIncomeList();
                                     });
                                   })))
                     ]));

@@ -14,7 +14,7 @@ typedef AddCustomExpenseCategory = void Function(String category);
 class AddExpense extends StatefulWidget {
 
   final ExpensesAddCallback expensesCallback;
-  //final List<String> expenseCategories;
+  
 
   const AddExpense(this.expensesCallback);
 
