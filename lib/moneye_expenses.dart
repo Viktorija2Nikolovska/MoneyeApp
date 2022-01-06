@@ -19,15 +19,18 @@ class Expenses extends StatefulWidget {
 
 class ExpensesState extends State<Expenses> {
   List<dynamic> expenses = [];
-  List<dynamic> expenseCategories = [];
+ // List<dynamic> expenseCategories = [];
 
   // === privremena implementacija ===
 
   @override
   void initState() {
+  
     _setExpenses();
     _getExpenses();
-    super.initState();
+      super.initState();
+    
+    
   }
 
   void _getExpenses() async {
@@ -41,9 +44,7 @@ class ExpensesState extends State<Expenses> {
     }
   }
 
-  // static void addExpense(String text1, String text2, String text3) {
-  //   expenses.add(value)
-  // }
+
 
   void _setExpenses() async {
     // ke se povikuva sekoj pat koga ke se dodade nov expense (noviot expense prvo ke se dodade vo listata, pa potoa ke se zacuva vo memorija)
@@ -60,7 +61,7 @@ class ExpensesState extends State<Expenses> {
       expenses.add({"amount": amount, "category": category, "date": date});
     });
 
-    _setExpenses();
+   _setExpenses();
   }
 
   // Koga ke se dodava nov expense, ke ima povik kon funkcija od ovoj widget koja ke prima tri parametri (amount, category i date) i istata ke dodava nova stavka vo listata, po sto ke
@@ -89,7 +90,7 @@ class ExpensesState extends State<Expenses> {
 
   // ====== ======
 
-  void _showForm() {
+  void _showAddExpenseForm() {
     Navigator.push(context, MaterialPageRoute(builder: (context) => AddExpense(_addExpense)));
   }
 
@@ -111,7 +112,7 @@ class ExpensesState extends State<Expenses> {
         ),
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add),
-          onPressed: _showForm,
+          onPressed: _showAddExpenseForm,
         ),
         body: ListView.builder(
           itemCount: expenses.length,

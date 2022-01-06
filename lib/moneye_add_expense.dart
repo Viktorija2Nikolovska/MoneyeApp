@@ -14,6 +14,7 @@ typedef AddCustomExpenseCategory = void Function(String category);
 class AddExpense extends StatefulWidget {
 
   final ExpensesAddCallback expensesCallback;
+  //final List<String> expenseCategories;
 
   const AddExpense(this.expensesCallback);
 
@@ -41,12 +42,22 @@ class _AddExpenseState extends State<AddExpense> {
     Navigator.push(context, MaterialPageRoute(builder: (context) => AddExpenseCategory(addCustomExpenseCategory)));
   }
 
+ @override
+  void initState() {
+    super.initState();
+    _setExpenseCategories();
+    _getExpenseCategories();
+
+
+  }
+
   void addCustomExpenseCategory(String category){
     setState(() {
       expenseCategories.add(
           category,
         );
     });
+    _setExpenseCategories();
   }
 
   void _onSubmit() {
@@ -66,9 +77,66 @@ class _AddExpenseState extends State<AddExpense> {
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Category successfully added.')),
+      const SnackBar(content: Text('Expense successfully added.')),
     );
   }
+
+  void _getExpenseCategories() async {
+   SharedPreferences preferences = await SharedPreferences.getInstance();
+   if (preferences.containsKey("expenseCategories")) {
+     String jsonExpenses = preferences.getString("expenseCategories");
+     var listCategories = jsonDecode(jsonExpenses);
+     setState(() {
+       expenseCategories = listCategories;
+     });
+   }
+ }
+ 
+
+ 
+ void _setExpenseCategories() async {
+   // ke se povikuva sekoj pat koga ke se dodade nov expense (noviot expense prvo ke se dodade vo listata, pa potoa ke se zacuva vo memorija)
+   SharedPreferences preferences = await SharedPreferences.getInstance();
+   if (preferences.containsKey("expenseCategories")) {
+     preferences.remove("expenseCategories");
+   }
+   preferences.setString("expenseCategories", jsonEncode(expenseCategories));
+   // _getExpenses();
+ }
+
+ void _listExpenseCategories(){
+    //  Widget _buildBody() {
+    // return 
+    ListView.builder(
+      itemCount: expenseCategories.length,
+      itemBuilder: (context, index) {
+        return Card(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            // po vertikalna oska, bidejki e kolona, kolku da bide istata dolga. Ako se stavi min, dolzinata ke bide ednakva na taa dolzina sto ja zafakjaat decata (children)
+            children: [
+              ListTile(
+                  leading: Icon(Icons.access_time_filled),
+                  title: Text(expenseCategories[index],
+                      style:
+                          TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                 
+                  trailing: Container(
+                      child: IconButton(
+                          icon: Icon(Icons.delete, color: Colors.red),
+                          onPressed: () {
+                            setState(() {
+                              expenseCategories.removeAt(index);
+                            });
+                            _setExpenseCategories();
+                          }))),
+            ],
+          ),
+        );
+      },
+    );
+  // }
+   }
 
   @override
   Widget build(BuildContext context) {
@@ -222,3 +290,7 @@ class _FormDatePickerState extends State<_FormDatePicker> {
 }
 
 
+
+
+
+ 

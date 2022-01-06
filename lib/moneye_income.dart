@@ -12,44 +12,44 @@ class Income extends StatefulWidget {
 }
 
 class _IncomeState extends State<Income> {
-  List<dynamic> incomeSources = [];
-  List<dynamic> incomeList = [];
+  // List<dynamic> incomeSources = [];
+  // List<dynamic> incomeList = [];
 
-  // List<dynamic> incomeSources = [
-  //   {
-  //     "amount": "700EUR",
-  //     "workplace": "Netcetera",
-  //     "position": "Software Engineer"
-  //   },
-  //   {
-  //     "amount": "500EUR",
-  //     "workplace": "Freelance",
-  //     "position": "Ethical Hacker"
-  //   }
-  // ];
+  List<dynamic> incomeSources = [
+    {
+      "amount": "700EUR",
+      "workplace": "Netcetera",
+      "position": "Software Engineer"
+    },
+    {
+      "amount": "500EUR",
+      "workplace": "Freelance",
+      "position": "Ethical Hacker"
+    }
+  ];
 
-  // List<dynamic> incomeList = [
-  //   {
-  //     "amount": "700EUR",
-  //     "workplace": "Netcetera",
-  //     "date": DateFormat("dd/MM/yyyy kk:mm").format(DateTime.now())
-  //   },
-  //   {
-  //     "amount": "700EUR",
-  //     "workplace": "Netcetera",
-  //     "date": DateFormat("dd/MM/yyyy kk:mm").format(DateTime.now())
-  //   },
-  //   {
-  //     "amount": "500EUR",
-  //     "workplace": "Freelance",
-  //     "date": DateFormat("dd/MM/yyyy kk:mm").format(DateTime.now())
-  //   },
-  //   {
-  //     "amount": "500EUR",
-  //     "workplace": "Freelance",
-  //     "date": DateFormat("dd/MM/yyyy kk:mm").format(DateTime.now())
-  //   }
-  // ];
+  List<dynamic> incomeList = [
+    {
+      "amount": "700EUR",
+      "workplace": "Netcetera",
+      "date": DateFormat("dd/MM/yyyy kk:mm").format(DateTime.now())
+    },
+    {
+      "amount": "700EUR",
+      "workplace": "Netcetera",
+      "date": DateFormat("dd/MM/yyyy kk:mm").format(DateTime.now())
+    },
+    {
+      "amount": "500EUR",
+      "workplace": "Freelance",
+      "date": DateFormat("dd/MM/yyyy kk:mm").format(DateTime.now())
+    },
+    {
+      "amount": "500EUR",
+      "workplace": "Freelance",
+      "date": DateFormat("dd/MM/yyyy kk:mm").format(DateTime.now())
+    }
+  ];
 
   @override
   void initState() {
@@ -99,9 +99,17 @@ class _IncomeState extends State<Income> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text("Income information", style: TextStyle(fontSize: 27))),
+        appBar: AppBar(
+            title: Text("Income information", style: TextStyle(fontSize: 27))),
         body: Column(mainAxisSize: MainAxisSize.min, children: [
-          Container(margin: EdgeInsets.only(top: 25), padding: EdgeInsets.only(bottom: 10, left: 15), child: Align(alignment: Alignment.topLeft, child: Text("Income sources", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)))),
+          Container(
+              margin: EdgeInsets.only(top: 25),
+              padding: EdgeInsets.only(bottom: 10, left: 15),
+              child: Align(
+                  alignment: Alignment.topLeft,
+                  child: Text("Income sources",
+                      style: TextStyle(
+                          fontSize: 24, fontWeight: FontWeight.bold)))),
           SizedBox(
               height: MediaQuery.of(context).size.height / 4,
               child: ListView.builder(
@@ -111,11 +119,21 @@ class _IncomeState extends State<Income> {
                         child: Column(children: [
                       ListTile(
                           leading: Icon(Icons.access_time_filled, size: 35),
-                          title: Container(child: Text(incomeSources[index]["amount"].toString(), style: TextStyle(fontSize: 27, fontWeight: FontWeight.bold))),
-                          subtitle: Text(incomeSources[index]["workplace"].toString() + "\n" + incomeSources[index]["position"].toString(), style: TextStyle(fontSize: 21)),
+                          title: Container(
+                              child: Text(
+                                  incomeSources[index]["amount"].toString(),
+                                  style: TextStyle(
+                                      fontSize: 27,
+                                      fontWeight: FontWeight.bold))),
+                          subtitle: Text(
+                              incomeSources[index]["workplace"].toString() +
+                                  "\n" +
+                                  incomeSources[index]["position"].toString(),
+                              style: TextStyle(fontSize: 21)),
                           trailing: Container(
                               child: IconButton(
-                                  icon: Icon(Icons.delete, color: Colors.red, size: 35),
+                                  icon: Icon(Icons.delete,
+                                      color: Colors.red, size: 35),
                                   onPressed: () {
                                     setState(() {
                                       incomeSources.removeAt(index);
@@ -129,18 +147,24 @@ class _IncomeState extends State<Income> {
               padding: EdgeInsets.only(bottom: 10, left: 15, right: 20),
               child: Align(
                   alignment: Alignment.topLeft,
-                  child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                    Text("Income logs", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                    ElevatedButton(
-                        child: Text("CLEAR", style: TextStyle(fontSize: 16)),
-                        onPressed: () {
-                          setState(() {
-                            incomeList = [];
-                            // _setIncomeList();
-                          });
-                        },
-                        style: ElevatedButton.styleFrom(primary: Colors.green))
-                  ]))),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("Income logs",
+                            style: TextStyle(
+                                fontSize: 24, fontWeight: FontWeight.bold)),
+                        ElevatedButton(
+                            child:
+                                Text("CLEAR", style: TextStyle(fontSize: 16)),
+                            onPressed: () {
+                              setState(() {
+                                incomeList = [];
+                                // _setIncomeList();
+                              });
+                            },
+                            style:
+                                ElevatedButton.styleFrom(primary: Colors.green))
+                      ]))),
           SizedBox(
               height: MediaQuery.of(context).size.height / 2,
               child: ListView.builder(
@@ -150,11 +174,21 @@ class _IncomeState extends State<Income> {
                         child: Column(children: [
                       ListTile(
                           leading: Icon(Icons.access_time_filled, size: 35),
-                          title: Container(child: Text(incomeList[index]["amount"].toString(), style: TextStyle(fontSize: 27, fontWeight: FontWeight.bold))),
-                          subtitle: Text(incomeList[index]["workplace"].toString() + "\n" + incomeList[index]["date"].toString(), style: TextStyle(fontSize: 21)),
+                          title: Container(
+                              child: Text(
+                                  incomeList[index]["amount"].toString(),
+                                  style: TextStyle(
+                                      fontSize: 27,
+                                      fontWeight: FontWeight.bold))),
+                          subtitle: Text(
+                              incomeList[index]["workplace"].toString() +
+                                  "\n" +
+                                  incomeList[index]["date"].toString(),
+                              style: TextStyle(fontSize: 21)),
                           trailing: Container(
                               child: IconButton(
-                                  icon: Icon(Icons.delete, color: Colors.red, size: 35),
+                                  icon: Icon(Icons.delete,
+                                      color: Colors.red, size: 35),
                                   onPressed: () {
                                     setState(() {
                                       incomeList.removeAt(index);
