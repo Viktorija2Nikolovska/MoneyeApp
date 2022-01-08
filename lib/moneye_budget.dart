@@ -27,14 +27,11 @@ class _BudgetState extends State<Budget> {
 
     if (selectedCurrency == "USD") {
       amount = double.parse(budgetController.text) * 0.88;
-    }
-    else if (selectedCurrency == "GBP") {
+    } else if (selectedCurrency == "GBP") {
       amount = double.parse(budgetController.text) * 1.179;
-    }
-    else if (selectedCurrency == "MKD") {
+    } else if (selectedCurrency == "MKD") {
       amount = double.parse(budgetController.text) * 0.0162;
-    }
-    else {
+    } else {
       amount = double.parse(budgetController.text);
     }
 
@@ -98,12 +95,11 @@ class _BudgetState extends State<Budget> {
                           }).toList(),
                         ),
                         Container(
-                          margin: EdgeInsets.only(top: 25),
-                          child: ElevatedButton(
-                            child: const Text('Submit'),
-                            onPressed: _onSubmit,
-                          )
-                        )
+                            margin: EdgeInsets.only(top: 25),
+                            child: ElevatedButton(
+                              child: const Text('Submit'),
+                              onPressed: _onSubmit,
+                            ))
                       ]
                     ],
                   ),

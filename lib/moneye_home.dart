@@ -3,7 +3,6 @@ import 'package:percent_indicator/percent_indicator.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'moneye_add_expense.dart';
 import 'moneye_balance.dart';
 import 'moneye_budget.dart';
 import 'moneye_expenses.dart';
@@ -36,13 +35,17 @@ class _MoneyeState extends State<Moneye> {
   double initialSavingsAmount = 0.000;
   double currentSavingsAmount = 0.000;
 
+  double budgetPercentage = 0.000;
+  double savingsPercentage = 0.000;
+
   @override
   void initState() {
     super.initState();
 
     _getTotalExpenses();
     _getTotalIncome();
-    _getFinancialData("currentBalance", "currentBudget", "currentSavingsAmount");
+    _getFinancialData(
+        "currentBalance", "currentBudget", "currentSavingsAmount");
   }
 
   void _listExpenses() {
@@ -60,18 +63,54 @@ class _MoneyeState extends State<Moneye> {
         context, MaterialPageRoute(builder: (context) => Statistics()));
   }
 
+  void _updatePercentages() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+
+    if (preferences.containsKey("initialBudget") &&
+        preferences.containsKey("currentBudget")) {
+      setState(() {
+        budgetPercentage = 1 -
+            (((initialBudget - currentBudget) / initialBudget) * 100 * 0.01);
+      });
+    } else {
+      setState(() {
+        budgetPercentage = 0.000;
+      });
+    }
+
+    if (preferences.containsKey("initialSavingsAmount") &&
+        preferences.containsKey("currentSavingsAmount")) {
+      setState(() {
+        savingsPercentage = 1 -
+            (((initialSavingsAmount - currentSavingsAmount) /
+                    initialSavingsAmount) *
+                100 *
+                0.01);
+      });
+    } else {
+      setState(() {
+        savingsPercentage = 0.000;
+      });
+    }
+  }
+
   void _getTotalExpenses() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
+
     double totalExpensesPrefs = preferences.get("totalExpenses");
     double currentBalancePrefs = preferences.get("currentBalance");
     double currentBudgetPrefs = preferences.get("currentBudget");
     double currentSavingsAmountPrefs = preferences.get("currentSavingsAmount");
     setState(() {
       totalExpenses = totalExpensesPrefs != null ? totalExpensesPrefs : 0.000;
-      currentBalance = currentBalancePrefs != null ? currentBalancePrefs : 0.000;
+      currentBalance =
+          currentBalancePrefs != null ? currentBalancePrefs : 0.000;
       currentBudget = currentBudgetPrefs != null ? currentBudgetPrefs : 0.000;
-      currentSavingsAmount = currentSavingsAmountPrefs != null ? currentSavingsAmountPrefs : 0.000;
+      currentSavingsAmount =
+          currentSavingsAmountPrefs != null ? currentSavingsAmountPrefs : 0.000;
     });
+
+    _updatePercentages();
   }
 
   void _getTotalIncome() async {
@@ -80,38 +119,44 @@ class _MoneyeState extends State<Moneye> {
     double currentBalancePrefs = preferences.get("currentBalance");
     setState(() {
       totalIncome = totalIncomePrefs != null ? totalIncomePrefs : 0.000;
-      currentBalance = currentBalancePrefs != null ? currentBalancePrefs : 0.000;
+      currentBalance =
+          currentBalancePrefs != null ? currentBalancePrefs : 0.000;
     });
   }
 
-  void _getFinancialData(String currentBalanceParam, String currentBudgetParam, String currentSavingsAmountParam) async {
+  void _getFinancialData(String currentBalanceParam, String currentBudgetParam,
+      String currentSavingsAmountParam) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
 
-    if(preferences.containsKey(currentBalanceParam)) {
+    if (preferences.containsKey(currentBalanceParam)) {
       setState(() {
         currentBalance = preferences.get(currentBalanceParam);
       });
     }
-    if(preferences.containsKey(currentBudgetParam)) {
+    if (preferences.containsKey(currentBudgetParam)) {
       setState(() {
         initialBudget = preferences.get("initialBudget");
         currentBudget = preferences.get(currentBudgetParam);
       });
     }
-    if(preferences.containsKey(currentSavingsAmountParam)) {
+    if (preferences.containsKey(currentSavingsAmountParam)) {
       setState(() {
         initialSavingsAmount = preferences.get("initialSavingsAmount");
         currentSavingsAmount = preferences.get(currentSavingsAmountParam);
       });
     }
+
+    _updatePercentages();
   }
 
   void _setFinancialData(String dataType, double amount) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    if(preferences.containsKey(dataType)) {
+    if (preferences.containsKey(dataType)) {
       preferences.remove(dataType);
     }
     preferences.setDouble(dataType, amount);
+
+    _updatePercentages();
   }
 
   void _balanceForm() {
@@ -220,14 +265,17 @@ class _MoneyeState extends State<Moneye> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("Balance: " + currentBalance.toStringAsFixed(1) + "EUR",
+                      Text(
+                          "Balance: " +
+                              currentBalance.toStringAsFixed(1) +
+                              "EUR",
                           style: TextStyle(
                               fontSize: 26, fontWeight: FontWeight.bold)),
                       ElevatedButton(
                           child: Text("Set", style: TextStyle(fontSize: 16)),
                           onPressed: _balanceForm,
                           style:
-                          ElevatedButton.styleFrom(primary: Colors.green))
+                              ElevatedButton.styleFrom(primary: Colors.green))
                     ],
                   )),
               Container(
@@ -238,8 +286,13 @@ class _MoneyeState extends State<Moneye> {
                       ListTile(
                           minVerticalPadding: 20,
                           leading: Icon(Icons.attach_money, size: 50),
-                          title:
-                          Text("Budget: " + currentBudget.toStringAsFixed(1) + "EUR / " + initialBudget.toStringAsFixed(1) + "EUR", style: TextStyle(fontSize: 24)),
+                          title: Text(
+                              "Budget: " +
+                                  currentBudget.toStringAsFixed(1) +
+                                  "EUR / " +
+                                  initialBudget.toStringAsFixed(1) +
+                                  "EUR",
+                              style: TextStyle(fontSize: 24)),
                           subtitle: Padding(
                               padding: EdgeInsets.only(top: 15),
                               child: LinearPercentIndicator(
@@ -247,8 +300,11 @@ class _MoneyeState extends State<Moneye> {
                                 animation: true,
                                 lineHeight: 25,
                                 animationDuration: 2000,
-                                percent: 1 - (((initialBudget - currentBudget) / initialBudget) * 100 * 0.01),
-                                center: Text(((1 - (((initialBudget - currentBudget) / initialBudget))) * 100).toString() + "%",
+                                percent: budgetPercentage,
+                                center: Text(
+                                    (budgetPercentage * 100)
+                                            .toStringAsFixed(1) +
+                                        "%",
                                     style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold)),
@@ -271,7 +327,12 @@ class _MoneyeState extends State<Moneye> {
                       ListTile(
                           minVerticalPadding: 20,
                           leading: Icon(Icons.lock, size: 50),
-                          title: Text("Saving amount: " + currentSavingsAmount.toStringAsFixed(1) + "EUR / " + initialSavingsAmount.toStringAsFixed(1) + "EUR",
+                          title: Text(
+                              "Saving amount: " +
+                                  currentSavingsAmount.toStringAsFixed(1) +
+                                  "EUR / " +
+                                  initialSavingsAmount.toStringAsFixed(1) +
+                                  "EUR",
                               style: TextStyle(fontSize: 24)),
                           subtitle: Padding(
                             padding: EdgeInsets.only(top: 15),
@@ -280,8 +341,10 @@ class _MoneyeState extends State<Moneye> {
                               animation: true,
                               lineHeight: 25,
                               animationDuration: 2000,
-                              percent: 1 - (((initialSavingsAmount - currentSavingsAmount) / initialSavingsAmount) * 100 * 0.01),
-                              center: Text(((1 - (((initialSavingsAmount - currentSavingsAmount) / initialSavingsAmount))) * 100).toString() + "%",
+                              percent: savingsPercentage,
+                              center: Text(
+                                  (savingsPercentage * 100).toStringAsFixed(1) +
+                                      "%",
                                   style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold)),

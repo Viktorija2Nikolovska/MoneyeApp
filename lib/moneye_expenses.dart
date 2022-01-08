@@ -1,10 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:planner/moneye_add_expense.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:intl/intl.dart' as intl;
 import 'dart:core';
 import 'moneye_home.dart';
 
@@ -93,12 +91,11 @@ class ExpensesState extends State<Expenses> {
     double amountToEUR = convertToEuro(amount, currency);
 
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    if(preferences.containsKey("currentBalance")) {
+    if (preferences.containsKey("currentBalance")) {
       double currentBalance = preferences.get("currentBalance");
-      if(currentBalance - amountToEUR < 0) {
+      if (currentBalance - amountToEUR < 0) {
         currentBalance = 0;
-      }
-      else {
+      } else {
         currentBalance = currentBalance - amountToEUR;
       }
       preferences.setDouble("currentBalance", currentBalance);
@@ -109,20 +106,19 @@ class ExpensesState extends State<Expenses> {
     double amountToEUR = convertToEuro(amount, currency);
 
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    if(preferences.containsKey("currentBudget")) {
+    if (preferences.containsKey("currentBudget")) {
       double currentBudget = preferences.get("currentBudget");
-      if(currentBudget - amountToEUR < 0) {
-        if(preferences.containsKey("currentSavingsAmount")) {
+      if (currentBudget - amountToEUR < 0) {
+        if (preferences.containsKey("currentSavingsAmount")) {
           double currentSavings = preferences.get("currentSavingsAmount");
           currentSavings = currentSavings + (currentBudget - amountToEUR);
-          if(currentSavings < 0) {
+          if (currentSavings < 0) {
             currentSavings = 0;
           }
           preferences.setDouble("currentSavingsAmount", currentSavings);
         }
         currentBudget = 0;
-      }
-      else {
+      } else {
         currentBudget = currentBudget - amountToEUR;
       }
       preferences.setDouble("currentBudget", currentBudget);
@@ -148,7 +144,8 @@ class ExpensesState extends State<Expenses> {
     double total = 0;
 
     for (int i = 0; i < expenses.length; i++) {
-      double value = convertToEuro(expenses[i]["amount"], expenses[i]["currency"]);
+      double value =
+          convertToEuro(expenses[i]["amount"], expenses[i]["currency"]);
 
       total += value;
     }
@@ -194,7 +191,6 @@ class ExpensesState extends State<Expenses> {
             return Card(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
-                // po vertikalna oska, bidejki e kolona, kolku da bide istata dolga. Ako se stavi min, dolzinata ke bide ednakva na taa dolzina sto ja zafakjaat decata (children)
                 children: [
                   ListTile(
                       minVerticalPadding: 15,

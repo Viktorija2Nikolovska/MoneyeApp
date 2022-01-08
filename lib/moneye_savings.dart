@@ -27,14 +27,11 @@ class _SavingsState extends State<Savings> {
 
     if (selectedCurrency == "USD") {
       amount = double.parse(savingsController.text) * 0.88;
-    }
-    else if (selectedCurrency == "GBP") {
+    } else if (selectedCurrency == "GBP") {
       amount = double.parse(savingsController.text) * 1.179;
-    }
-    else if (selectedCurrency == "MKD") {
+    } else if (selectedCurrency == "MKD") {
       amount = double.parse(savingsController.text) * 0.0162;
-    }
-    else {
+    } else {
       amount = double.parse(savingsController.text);
     }
 
@@ -52,7 +49,8 @@ class _SavingsState extends State<Savings> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Set savings", style: TextStyle(fontSize: 25))),
+      appBar:
+          AppBar(title: Text("Set savings", style: TextStyle(fontSize: 25))),
       body: Form(
         child: Scrollbar(
           child: Align(
@@ -102,8 +100,7 @@ class _SavingsState extends State<Savings> {
                             child: ElevatedButton(
                               child: const Text('Submit'),
                               onPressed: _onSubmit,
-                            )
-                        )
+                            ))
                       ]
                     ],
                   ),

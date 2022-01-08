@@ -1,13 +1,6 @@
-import 'dart:async';
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:intl/intl.dart' as intl;
 import 'dart:core';
 import 'moneye_income.dart';
-import 'moneye_home.dart';
 
 class AddIncome extends StatefulWidget {
   final IncomeAddCallback incomeCallback;
@@ -34,8 +27,12 @@ class _AddIncomeState extends State<AddIncome> {
   String selectedCurrency = "EUR";
 
   void _onSubmit() {
-    incomeCallback(amountController.text, selectedCurrency,
-        workplaceController.text, dayOfIncomeController.text, positionController.text);
+    incomeCallback(
+        amountController.text,
+        selectedCurrency,
+        workplaceController.text,
+        dayOfIncomeController.text,
+        positionController.text);
 
     setState(() {
       amountController.text = "";
@@ -113,7 +110,8 @@ class _AddIncomeState extends State<AddIncome> {
                           controller: dayOfIncomeController,
                           decoration: const InputDecoration(
                             filled: true,
-                            hintText: 'Enter the day of income receival (day of month)',
+                            hintText:
+                                'Enter the day of income receival (day of month)',
                             labelText: 'Day of income',
                           ),
                         ),

@@ -1,9 +1,6 @@
-import 'dart:async';
-import 'dart:collection';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:planner/moneye_home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'moneye_add_income.dart';
@@ -75,24 +72,26 @@ class _IncomeState extends State<Income> {
     double amountToEUR = convertToEuro(amount, currency);
 
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    if(preferences.containsKey("currentBalance")) {
+    if (preferences.containsKey("currentBalance")) {
       double currentBalance = preferences.get("currentBalance");
       currentBalance = currentBalance + amountToEUR;
       preferences.setDouble("currentBalance", currentBalance);
+    } else {
+      preferences.setDouble("currentBalance", amountToEUR);
     }
   }
 
-  void _setTotalIncomeByWorkplace(String workplace, String amount, String currency) async {
+  void _setTotalIncomeByWorkplace(
+      String workplace, String amount, String currency) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
 
     double prefsAmount = convertToEuro(amount, currency);
 
-    if(preferences.containsKey(workplace)) {
+    if (preferences.containsKey(workplace)) {
       double current = preferences.get(workplace);
       current += prefsAmount;
       preferences.setDouble(workplace, current);
-    }
-    else {
+    } else {
       preferences.setDouble(workplace, prefsAmount);
     }
   }
@@ -101,7 +100,8 @@ class _IncomeState extends State<Income> {
     double total = 0;
 
     for (int i = 0; i < incomeList.length; i++) {
-      double value = convertToEuro(incomeList[i]["amount"], incomeList[i]["currency"]);
+      double value =
+          convertToEuro(incomeList[i]["amount"], incomeList[i]["currency"]);
 
       total += value;
     }
@@ -127,7 +127,8 @@ class _IncomeState extends State<Income> {
           flag = true;
         }
       }
-      if (now.day == int.parse(incomeSources[i]["dayOfIncome"]) && flag == false) {
+      if (now.day == int.parse(incomeSources[i]["dayOfIncome"]) &&
+          flag == false) {
         setState(() {
           incomeList.add({
             "amount": incomeSources[i]["amount"],
@@ -139,8 +140,12 @@ class _IncomeState extends State<Income> {
         });
 
         _setIncomeList();
-        _updateBalance(incomeSources[i]["amount"], incomeSources[i]["currency"]);
-        _setTotalIncomeByWorkplace(incomeSources[i]["workplace"] + "(workplace)", incomeSources[i]["amount"], incomeSources[i]["currency"]);
+        _updateBalance(
+            incomeSources[i]["amount"], incomeSources[i]["currency"]);
+        _setTotalIncomeByWorkplace(
+            incomeSources[i]["workplace"] + "(workplace)",
+            incomeSources[i]["amount"],
+            incomeSources[i]["currency"]);
       }
     }
 

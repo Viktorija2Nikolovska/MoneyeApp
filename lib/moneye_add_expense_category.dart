@@ -1,17 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:planner/moneye_add_expense.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:intl/intl.dart' as intl;
 import 'dart:core';
-import 'moneye_expenses.dart';
-import 'moneye_home.dart';
 import 'moneye_add_expense.dart';
 
 class AddExpenseCategory extends StatefulWidget {
-
   final GetExpenseCategories getCallback;
   final List<dynamic> expenseCategories;
 
@@ -24,71 +19,70 @@ class AddExpenseCategory extends StatefulWidget {
 }
 
 class _AddExpenseCategoryState extends State<AddExpenseCategory> {
+  final expenseCategoryController = TextEditingController();
 
- final expenseCategoryController = TextEditingController();
+  GetExpenseCategories getCallback;
+  List<dynamic> expenseCategories;
 
- GetExpenseCategories getCallback;
- List<dynamic> expenseCategories;
+  _AddExpenseCategoryState(this.getCallback, this.expenseCategories);
 
- _AddExpenseCategoryState(this.getCallback, this.expenseCategories);
+  void _submitExpenseCategory() {
+    setState(() {
+      expenseCategories.add(expenseCategoryController.text);
+      expenseCategoryController.text = "";
+    });
 
- void _submitExpenseCategory() {
-   setState(() {
-     expenseCategories.add(expenseCategoryController.text);
-     expenseCategoryController.text = "";
-   });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Category successfully added.')),
+    );
 
-   ScaffoldMessenger.of(context).showSnackBar(
-     const SnackBar(content: Text('Category successfully added.')),
-   );
-
-   _setExpenseCategories();
-   getCallback();
+    _setExpenseCategories();
+    getCallback();
   }
 
- void _setExpenseCategories() async {
-   SharedPreferences preferences = await SharedPreferences.getInstance();
-   if (preferences.containsKey("expenseCategories")) {
-     preferences.remove("expenseCategories");
-   }
-   preferences.setString("expenseCategories", jsonEncode(expenseCategories));
- }
+  void _setExpenseCategories() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    if (preferences.containsKey("expenseCategories")) {
+      preferences.remove("expenseCategories");
+    }
+    preferences.setString("expenseCategories", jsonEncode(expenseCategories));
+  }
 
- Widget _listExpenseCategories(){
-   return ListView.builder(
-     itemCount: expenseCategories.length,
-     itemBuilder: (context, index) {
-       return Card(
-         child: Column(
-           mainAxisSize: MainAxisSize.min,
-           children: [
-             ListTile(
-                 leading: Icon(Icons.access_time_filled),
-                 title: Text(expenseCategories[index],
-                     style:
-                     TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-                 trailing: Container(
-                     child: IconButton(
-                         icon: Icon(Icons.delete, color: Colors.red),
-                         onPressed: () {
-                           setState(() {
-                             expenseCategories.removeAt(index);
-                           });
+  Widget _listExpenseCategories() {
+    return ListView.builder(
+      itemCount: expenseCategories.length,
+      itemBuilder: (context, index) {
+        return Card(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                  leading: Icon(Icons.access_time_filled),
+                  title: Text(expenseCategories[index],
+                      style:
+                          TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                  trailing: Container(
+                      child: IconButton(
+                          icon: Icon(Icons.delete, color: Colors.red),
+                          onPressed: () {
+                            setState(() {
+                              expenseCategories.removeAt(index);
+                            });
 
-                           _setExpenseCategories();
-                           getCallback();
-                         }))),
-           ],
-         ),
-       );
-     },
-   );
-   // }
- }
+                            _setExpenseCategories();
+                            getCallback();
+                          }))),
+            ],
+          ),
+        );
+      },
+    );
+    // }
+  }
 
- @override
+  @override
   Widget build(BuildContext context) {
-  return Scaffold(
+    return Scaffold(
         appBar: AppBar(
           title: const Text('Add Category'),
         ),
@@ -117,7 +111,7 @@ class _AddExpenseCategoryState extends State<AddExpenseCategory> {
                                 ),
                               ),
                             ].expand(
-                                  (widget) => [
+                              (widget) => [
                                 widget,
                                 const SizedBox(
                                   height: 24,
@@ -145,10 +139,6 @@ class _AddExpenseCategoryState extends State<AddExpenseCategory> {
             height: MediaQuery.of(context).size.height / 4,
             child: _listExpenseCategories(),
           )
-        ])
-      );
-   } 
-
-  
-
+        ]));
+  }
 }
