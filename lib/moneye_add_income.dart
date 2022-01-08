@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -10,7 +11,9 @@ import 'moneye_home.dart';
 
 class AddIncome extends StatefulWidget {
   final IncomeAddCallback incomeCallback;
-  const AddIncome (this.incomeCallback);
+
+  const AddIncome(this.incomeCallback);
+
   @override
   State<StatefulWidget> createState() {
     return _AddIncomeState(this.incomeCallback);
@@ -19,36 +22,34 @@ class AddIncome extends StatefulWidget {
 
 class _AddIncomeState extends State<AddIncome> {
   IncomeAddCallback incomeCallback;
-  _AddIncomeState(this.incomeCallback);
-  
 
-// "amount": "700EUR",
-  //     "workplace": "Netcetera",
-  //     "position": "Software Engineer"
+  _AddIncomeState(this.incomeCallback);
+
   final amountController = TextEditingController();
+  final dayOfIncomeController = TextEditingController();
   final workplaceController = TextEditingController();
   final positionController = TextEditingController();
- String date= DateFormat("dd/MM/yyyy kk:mm").format(DateTime.now());
- 
+
+  List<String> currencies = ["EUR", "MKD", "USD", "GBP"];
+  String selectedCurrency = "EUR";
 
   void _onSubmit() {
-    incomeCallback(amountController.text,workplaceController.text,positionController.text,date);
+    incomeCallback(amountController.text, selectedCurrency,
+        workplaceController.text, dayOfIncomeController.text, positionController.text);
 
     setState(() {
-
       amountController.text = "";
-     
-      workplaceController.text = "";
-           positionController.text = "";
-            date= DateFormat("dd/MM/yyyy kk:mm").format(DateTime.now());
+      selectedCurrency = "EUR";
 
+      dayOfIncomeController.text = "";
+      workplaceController.text = "";
+      positionController.text = "";
     });
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Income successfully added.')),
     );
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -78,12 +79,42 @@ class _AddIncomeState extends State<AddIncome> {
                             labelText: 'Income Amount',
                           ),
                         ),
+                        DropdownButton<String>(
+                          value: selectedCurrency,
+                          icon: const Icon(Icons.arrow_downward),
+                          elevation: 16,
+                          style: const TextStyle(color: Colors.deepPurple),
+                          underline: Container(
+                            height: 2,
+                            color: Colors.deepPurpleAccent,
+                          ),
+                          onChanged: (String newValue) {
+                            setState(() {
+                              selectedCurrency = newValue;
+                            });
+                          },
+                          items: currencies
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                        ),
                         TextFormField(
                           controller: workplaceController,
                           decoration: const InputDecoration(
                             filled: true,
                             hintText: 'Enter workplace',
                             labelText: 'Workplace',
+                          ),
+                        ),
+                        TextFormField(
+                          controller: dayOfIncomeController,
+                          decoration: const InputDecoration(
+                            filled: true,
+                            hintText: 'Enter the day of income receival (day of month)',
+                            labelText: 'Day of income',
                           ),
                         ),
                         TextFormField(
@@ -94,8 +125,6 @@ class _AddIncomeState extends State<AddIncome> {
                             labelText: 'Work Position',
                           ),
                         ),
-
-                        
                       ].expand(
                         (widget) => [
                           widget,
@@ -108,7 +137,6 @@ class _AddIncomeState extends State<AddIncome> {
                         child: const Text('Submit'),
                         onPressed: _onSubmit,
                       ),
-                      
                     ],
                   ),
                 ),
@@ -119,9 +147,4 @@ class _AddIncomeState extends State<AddIncome> {
       ),
     );
   }
-
-  
 }
-
-
-  

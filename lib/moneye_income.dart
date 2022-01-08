@@ -1,17 +1,25 @@
+import 'dart:async';
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:planner/moneye_home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'add_income.dart';
+import 'moneye_add_income.dart';
+import 'package:intl/intl.dart' as intl;
 
-typedef IncomeAddCallback = void Function(
-    String amount, String workplace, String position,String date);
+typedef IncomeAddCallback = void Function(String amount, String currency,
+    String workplace, String dayOfIncome, String position);
 
 class Income extends StatefulWidget {
+  final TotalIncome callback;
+
+  const Income(this.callback);
+
   @override
   State<StatefulWidget> createState() {
-    return _IncomeState();
+    return _IncomeState(this.callback);
   }
 }
 
@@ -19,55 +27,124 @@ class _IncomeState extends State<Income> {
   List<dynamic> incomeSources = [];
   List<dynamic> incomeList = [];
 
-  // List<dynamic> incomeSources = [
-  //   {
-  //     "amount": "700EUR",
-  //     "workplace": "Netcetera",
-  //     "position": "Software Engineer"
-  //   },
-  //   {
-  //     "amount": "500EUR",
-  //     "workplace": "Freelance",
-  //     "position": "Ethical Hacker"
-  //   }
-  // ];
+  TotalIncome callback;
 
-  // List<dynamic> incomeList = [
-  //   {
-  //     "amount": "700EUR",
-  //     "workplace": "Netcetera",
-  //     "date": DateFormat("dd/MM/yyyy kk:mm").format(DateTime.now())
-  //   },
-  //   {
-  //     "amount": "700EUR",
-  //     "workplace": "Netcetera",
-  //     "date": DateFormat("dd/MM/yyyy kk:mm").format(DateTime.now())
-  //   },
-  //   {
-  //     "amount": "500EUR",
-  //     "workplace": "Freelance",
-  //     "date": DateFormat("dd/MM/yyyy kk:mm").format(DateTime.now())
-  //   },
-
-  // ];
+  _IncomeState(this.callback);
 
   @override
   void initState() {
     super.initState();
+
     _getIncomeSources();
     _getIncomeList();
   }
 
-  void _addIncome(String amount, String workplace, String position,String date) {
+  double convertToEuro(String amount, String currency) {
+    double amountToEUR = 0;
+
+    if (currency == "USD") {
+      amountToEUR = double.parse(amount) * 0.88;
+    } else if (currency == "GBP") {
+      amountToEUR = double.parse(amount) * 1.179;
+    } else if (currency == "MKD") {
+      amountToEUR = double.parse(amount) * 0.0162;
+    } else {
+      amountToEUR = double.parse(amount);
+    }
+
+    return amountToEUR;
+  }
+
+  void _addIncome(String amount, String currency, String workplace,
+      String dayOfIncome, String position) {
     setState(() {
-      incomeSources.add(
-          {"amount": amount, "workplace": workplace, "position": position});
-          incomeList.add({"amount": amount, "workplace": workplace, "date":date});
+      incomeSources.add({
+        "amount": amount,
+        "currency": currency,
+        "workplace": workplace,
+        "dayOfIncome": dayOfIncome,
+        "position": position
+      });
     });
 
-
     _setIncomeSources();
-    _setIncomeList();
+    _logIncome();
+  }
+
+  void _updateBalance(String amount, String currency) async {
+    double amountToEUR = convertToEuro(amount, currency);
+
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    if(preferences.containsKey("currentBalance")) {
+      double currentBalance = preferences.get("currentBalance");
+      currentBalance = currentBalance + amountToEUR;
+      preferences.setDouble("currentBalance", currentBalance);
+    }
+  }
+
+  void _setTotalIncomeByWorkplace(String workplace, String amount, String currency) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+
+    double prefsAmount = convertToEuro(amount, currency);
+
+    if(preferences.containsKey(workplace)) {
+      double current = preferences.get(workplace);
+      current += prefsAmount;
+      preferences.setDouble(workplace, current);
+    }
+    else {
+      preferences.setDouble(workplace, prefsAmount);
+    }
+  }
+
+  void _calculateAndSetTotalIncome() async {
+    double total = 0;
+
+    for (int i = 0; i < incomeList.length; i++) {
+      double value = convertToEuro(incomeList[i]["amount"], incomeList[i]["currency"]);
+
+      total += value;
+    }
+
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    if (preferences.containsKey("totalIncome")) {
+      preferences.remove("totalIncome");
+    }
+    preferences.setDouble("totalIncome", total);
+
+    callback();
+  }
+
+  void _logIncome() {
+    DateTime now = DateTime.now();
+    bool flag = false;
+
+    for (int i = 0; i < incomeSources.length; i++) {
+      flag = false;
+      for (int j = 0; j < incomeList.length; j++) {
+        if (incomeSources[i]["workplace"] == incomeList[j]["workplace"] &&
+            now.month == incomeList[j]["month"]) {
+          flag = true;
+        }
+      }
+      if (now.day == int.parse(incomeSources[i]["dayOfIncome"]) && flag == false) {
+        setState(() {
+          incomeList.add({
+            "amount": incomeSources[i]["amount"],
+            "currency": incomeSources[i]["currency"],
+            "workplace": incomeSources[i]["workplace"],
+            "date": intl.DateFormat("dd/MM/yyyy kk:mm").format(now),
+            "month": now.month
+          });
+        });
+
+        _setIncomeList();
+        _updateBalance(incomeSources[i]["amount"], incomeSources[i]["currency"]);
+        _setTotalIncomeByWorkplace(incomeSources[i]["workplace"] + "(workplace)", incomeSources[i]["amount"], incomeSources[i]["currency"]);
+      }
+    }
+
+    _calculateAndSetTotalIncome();
   }
 
   void _showAddIncomeForm() {
@@ -103,6 +180,8 @@ class _IncomeState extends State<Income> {
         incomeList = decodedIncomeList;
       });
     }
+
+    _logIncome();
   }
 
   void _setIncomeList() async {
@@ -118,7 +197,7 @@ class _IncomeState extends State<Income> {
     return Scaffold(
         appBar: AppBar(
             title: Text("Income information", style: TextStyle(fontSize: 27))),
-                  floatingActionButton: FloatingActionButton(
+        floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add),
           onPressed: _showAddIncomeForm,
         ),
@@ -142,7 +221,9 @@ class _IncomeState extends State<Income> {
                           leading: Icon(Icons.access_time_filled, size: 35),
                           title: Container(
                               child: Text(
-                                  incomeSources[index]["amount"].toString(),
+                                  incomeSources[index]["amount"].toString() +
+                                      incomeSources[index]["currency"]
+                                          .toString(),
                                   style: TextStyle(
                                       fontSize: 27,
                                       fontWeight: FontWeight.bold))),
@@ -158,8 +239,8 @@ class _IncomeState extends State<Income> {
                                   onPressed: () {
                                     setState(() {
                                       incomeSources.removeAt(index);
-                                      _setIncomeSources();
                                     });
+                                    _setIncomeSources();
                                   })))
                     ]));
                   })),
@@ -179,8 +260,8 @@ class _IncomeState extends State<Income> {
                           onPressed: () {
                             setState(() {
                               incomeList = [];
-                              _setIncomeList();
                             });
+                            _setIncomeList();
                           },
                           style:
                               ElevatedButton.styleFrom(primary: Colors.green))
@@ -197,7 +278,8 @@ class _IncomeState extends State<Income> {
                           leading: Icon(Icons.access_time_filled, size: 35),
                           title: Container(
                               child: Text(
-                                  incomeList[index]["amount"].toString(),
+                                  incomeList[index]["amount"].toString() +
+                                      incomeList[index]["currency"],
                                   style: TextStyle(
                                       fontSize: 27,
                                       fontWeight: FontWeight.bold))),
@@ -213,8 +295,8 @@ class _IncomeState extends State<Income> {
                                   onPressed: () {
                                     setState(() {
                                       incomeList.removeAt(index);
-                                      _setIncomeList();
                                     });
+                                    _setIncomeList();
                                   })))
                     ]));
                   }))

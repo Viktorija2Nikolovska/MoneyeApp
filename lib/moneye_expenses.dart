@@ -8,26 +8,48 @@ import 'package:intl/intl.dart' as intl;
 import 'dart:core';
 import 'moneye_home.dart';
 
-typedef ExpensesAddCallback = void Function(String amount, String category, String date);
+typedef ExpensesAddCallback = void Function(
+    String amount, String category, String currency, String date);
 
 class Expenses extends StatefulWidget {
+  final TotalExpenses callback;
+
+  const Expenses(this.callback);
+
   @override
   State<StatefulWidget> createState() {
-    return ExpensesState();
+    return ExpensesState(this.callback);
   }
 }
 
 class ExpensesState extends State<Expenses> {
   List<dynamic> expenses = [];
- // List<dynamic> expenseCategories = [];
 
-  // === privremena implementacija ===
+  TotalExpenses callback;
+
+  ExpensesState(this.callback);
 
   @override
   void initState() {
-      super.initState();
+    super.initState();
 
-      _getExpenses();
+    _getExpenses();
+  }
+
+  double convertToEuro(String amount, String currency) {
+    double amountToEUR = 0;
+
+    if (currency == "USD") {
+      amountToEUR = double.parse(amount) * 0.88;
+    } else if (currency == "GBP") {
+      amountToEUR = double.parse(amount) * 1.179;
+    } else if (currency == "MKD") {
+      amountToEUR = double.parse(amount) * 0.0162;
+    } else {
+      amountToEUR = double.parse(amount);
+    }
+
+    return amountToEUR;
   }
 
   void _getExpenses() async {
@@ -35,7 +57,6 @@ class ExpensesState extends State<Expenses> {
     if (preferences.containsKey("expenses")) {
       String jsonExpenses = preferences.getString("expenses");
       var listExpenses = jsonDecode(jsonExpenses);
-      print(listExpenses);
       setState(() {
         expenses = listExpenses;
       });
@@ -43,51 +64,107 @@ class ExpensesState extends State<Expenses> {
   }
 
   void _setExpenses() async {
-    // ke se povikuva sekoj pat koga ke se dodade nov expense (noviot expense prvo ke se dodade vo listata, pa potoa ke se zacuva vo memorija)
     SharedPreferences preferences = await SharedPreferences.getInstance();
     if (preferences.containsKey("expenses")) {
       preferences.remove("expenses");
     }
     preferences.setString("expenses", jsonEncode(expenses));
-    // _getExpenses();
   }
 
-  void _addExpense(String amount, String category, String date) {
+  void _addExpense(
+      String amount, String category, String currency, String date) {
     setState(() {
-      expenses.add({"amount": amount, "category": category, "date": date});
+      expenses.add({
+        "amount": amount,
+        "category": category,
+        "currency": currency,
+        "date": date
+      });
     });
 
-   _setExpenses();
+    _setExpenses();
+    _setTotalExpensesByCategory(category + "(category)", amount, currency);
+    _updateBalance(amount, currency);
+    _updateBudget(amount, currency);
+    _calculateAndSetTotalExpenses();
   }
 
-  // Koga ke se dodava nov expense, ke ima povik kon funkcija od ovoj widget koja ke prima tri parametri (amount, category i date) i istata ke dodava nova stavka vo listata, po sto ke
-  // se povika _setExpenses() za perzistiranje vo memorija. Togas ke se trgne povikot do _getExpenses od _setExpenses funkcijata, a _getExpenses() ke se povikuva samo vo initState().
+  void _updateBalance(String amount, String currency) async {
+    double amountToEUR = convertToEuro(amount, currency);
 
-  // Idejata e inicijalno od memorija da se vcitaat stavkite, a ne da bidat hard kodirani. Kako sto se dodavaat novi ili se brisat postoecki, taka ke se povikuva _setExpenses() metodot
-  // i ke se azuriraat stavkite vo memorija, no nema da bidat povtorno prezemani od memorija bidejki vekje postojat vo listata (bile prezemani vo initState ili pri brisenje, direktno izbrisani od listata)
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    if(preferences.containsKey("currentBalance")) {
+      double currentBalance = preferences.get("currentBalance");
+      if(currentBalance - amountToEUR < 0) {
+        currentBalance = 0;
+      }
+      else {
+        currentBalance = currentBalance - amountToEUR;
+      }
+      preferences.setDouble("currentBalance", currentBalance);
+    }
+  }
 
-  // var expenses = [
-  //   {
-  //     "amount": "125.50MKD",
-  //     "category": "Food",
-  //     "date": DateFormat("dd/MM/yyyy kk:mm").format(DateTime.now())
-  //   },
-  //   {
-  //     "amount": "1500.00MKD",
-  //     "category": "Clothes",
-  //     "date": DateFormat("dd/MM/yyyy kk:mm").format(DateTime.now())
-  //   },
-  //   {
-  //     "amount": "1000.00MKD",
-  //     "category": "Petrol",
-  //     "date": DateFormat("dd/MM/yyyy kk:mm").format(DateTime.now())
-  //   }
-  // ];
+  void _updateBudget(String amount, String currency) async {
+    double amountToEUR = convertToEuro(amount, currency);
 
-  // ====== ======
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    if(preferences.containsKey("currentBudget")) {
+      double currentBudget = preferences.get("currentBudget");
+      if(currentBudget - amountToEUR < 0) {
+        if(preferences.containsKey("currentSavingsAmount")) {
+          double currentSavings = preferences.get("currentSavingsAmount");
+          currentSavings = currentSavings + (currentBudget - amountToEUR);
+          if(currentSavings < 0) {
+            currentSavings = 0;
+          }
+          preferences.setDouble("currentSavingsAmount", currentSavings);
+        }
+        currentBudget = 0;
+      }
+      else {
+        currentBudget = currentBudget - amountToEUR;
+      }
+      preferences.setDouble("currentBudget", currentBudget);
+    }
+  }
+
+  void _setTotalExpensesByCategory(
+      String category, String amount, String currency) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+
+    double prefsAmount = convertToEuro(amount, currency);
+
+    if (preferences.containsKey(category)) {
+      double current = preferences.get(category);
+      current += prefsAmount;
+      preferences.setDouble(category, current);
+    } else {
+      preferences.setDouble(category, prefsAmount);
+    }
+  }
+
+  void _calculateAndSetTotalExpenses() async {
+    double total = 0;
+
+    for (int i = 0; i < expenses.length; i++) {
+      double value = convertToEuro(expenses[i]["amount"], expenses[i]["currency"]);
+
+      total += value;
+    }
+
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    if (preferences.containsKey("totalExpenses")) {
+      preferences.remove("totalExpenses");
+    }
+    preferences.setDouble("totalExpenses", total);
+
+    callback();
+  }
 
   void _showAddExpenseForm() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => AddExpense(_addExpense)));
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => AddExpense(_addExpense)));
   }
 
   @override
@@ -124,7 +201,9 @@ class ExpensesState extends State<Expenses> {
                       leading: Icon(Icons.access_time_filled, size: 35),
                       title: Container(
                           margin: EdgeInsets.only(bottom: 10),
-                          child: Text(expenses[index]["amount"].toString(),
+                          child: Text(
+                              expenses[index]["amount"].toString() +
+                                  expenses[index]["currency"],
                               style: TextStyle(
                                   fontSize: 27, fontWeight: FontWeight.bold))),
                       subtitle: Text(

@@ -12,14 +12,14 @@ import 'moneye_add_expense.dart';
 
 class AddExpenseCategory extends StatefulWidget {
 
-  final AddCustomExpenseCategory categoryCallback;
+  final GetExpenseCategories getCallback;
   final List<dynamic> expenseCategories;
 
-  const AddExpenseCategory(this.categoryCallback, this.expenseCategories);
+  const AddExpenseCategory(this.getCallback, this.expenseCategories);
 
   @override
   State<StatefulWidget> createState() {
-    return _AddExpenseCategoryState(this.categoryCallback, this.expenseCategories);
+    return _AddExpenseCategoryState(this.getCallback, this.expenseCategories);
   }
 }
 
@@ -27,14 +27,12 @@ class _AddExpenseCategoryState extends State<AddExpenseCategory> {
 
  final expenseCategoryController = TextEditingController();
 
- AddCustomExpenseCategory categoryCallback;
+ GetExpenseCategories getCallback;
  List<dynamic> expenseCategories;
 
- _AddExpenseCategoryState(this.categoryCallback, this.expenseCategories);
+ _AddExpenseCategoryState(this.getCallback, this.expenseCategories);
 
  void _submitExpenseCategory() {
-   categoryCallback(expenseCategoryController.text);
-
    setState(() {
      expenseCategories.add(expenseCategoryController.text);
      expenseCategoryController.text = "";
@@ -43,10 +41,12 @@ class _AddExpenseCategoryState extends State<AddExpenseCategory> {
    ScaffoldMessenger.of(context).showSnackBar(
      const SnackBar(content: Text('Category successfully added.')),
    );
+
+   _setExpenseCategories();
+   getCallback();
   }
 
  void _setExpenseCategories() async {
-   // ke se povikuva sekoj pat koga ke se dodade nov expense (noviot expense prvo ke se dodade vo listata, pa potoa ke se zacuva vo memorija)
    SharedPreferences preferences = await SharedPreferences.getInstance();
    if (preferences.containsKey("expenseCategories")) {
      preferences.remove("expenseCategories");
@@ -61,14 +61,12 @@ class _AddExpenseCategoryState extends State<AddExpenseCategory> {
        return Card(
          child: Column(
            mainAxisSize: MainAxisSize.min,
-           // po vertikalna oska, bidejki e kolona, kolku da bide istata dolga. Ako se stavi min, dolzinata ke bide ednakva na taa dolzina sto ja zafakjaat decata (children)
            children: [
              ListTile(
                  leading: Icon(Icons.access_time_filled),
                  title: Text(expenseCategories[index],
                      style:
                      TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-
                  trailing: Container(
                      child: IconButton(
                          icon: Icon(Icons.delete, color: Colors.red),
@@ -78,6 +76,7 @@ class _AddExpenseCategoryState extends State<AddExpenseCategory> {
                            });
 
                            _setExpenseCategories();
+                           getCallback();
                          }))),
            ],
          ),

@@ -5,16 +5,16 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart' as intl;
 import 'dart:core';
+import 'moneye_datepicker.dart';
 import 'moneye_expenses.dart';
 import 'moneye_home.dart';
-import 'add_expense_category.dart';
+import 'moneye_add_expense_category.dart';
 
-typedef AddCustomExpenseCategory = void Function(String category);
+typedef GetExpenseCategories = Future<void> Function();
 
 class AddExpense extends StatefulWidget {
 
   final ExpensesAddCallback expensesCallback;
-  
 
   const AddExpense(this.expensesCallback);
 
@@ -28,7 +28,6 @@ class _AddExpenseState extends State<AddExpense> {
   ExpensesAddCallback expensesCallback;
  
   List<dynamic> expenseCategories = ["Food", "Clothes", "Petrol", "Gym"];
-
   String selectedCategory = "Food";
 
   final amountController = TextEditingController();
@@ -36,15 +35,20 @@ class _AddExpenseState extends State<AddExpense> {
   DateTime createdOn = DateTime.now();
   String formattedDate = "";
 
+  List<String> currencies = ["EUR", "MKD", "USD", "GBP"];
+  String selectedCurrency = "EUR";
+
   _AddExpenseState(this.expensesCallback);
 
   void _addCustomExpenseCategory() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => AddExpenseCategory(addCustomExpenseCategory, expenseCategories)));
+    Navigator.push(context, MaterialPageRoute(builder: (context) => AddExpenseCategory(_getExpenseCategories, expenseCategories)));
   }
 
  @override
   void initState() {
     super.initState();
+
+    _getExpenseCategories();
   }
 
   void addCustomExpenseCategory(String category){
@@ -64,11 +68,12 @@ class _AddExpenseState extends State<AddExpense> {
       });
     }
 
-    expensesCallback(amountController.text, selectedCategory, formattedDate);
+    expensesCallback(amountController.text, selectedCategory, selectedCurrency, formattedDate);
 
     setState(() {
       amountController.text = "";
       selectedCategory = "Food";
+      selectedCurrency = "EUR";
       createdOn = DateTime.now();
       formattedDate = intl.DateFormat('dd/MM/yyyy kk:mm').format(createdOn);
     });
@@ -78,7 +83,7 @@ class _AddExpenseState extends State<AddExpense> {
     );
   }
 
-  void _getExpenseCategories() async {
+  Future<void> _getExpenseCategories() async {
    SharedPreferences preferences = await SharedPreferences.getInstance();
    if (preferences.containsKey("expenseCategories")) {
      String jsonExpenses = preferences.getString("expenseCategories");
@@ -90,18 +95,15 @@ class _AddExpenseState extends State<AddExpense> {
  }
 
  void _setExpenseCategories() async {
-   // ke se povikuva sekoj pat koga ke se dodade nov expense (noviot expense prvo ke se dodade vo listata, pa potoa ke se zacuva vo memorija)
    SharedPreferences preferences = await SharedPreferences.getInstance();
    if (preferences.containsKey("expenseCategories")) {
      preferences.remove("expenseCategories");
    }
    preferences.setString("expenseCategories", jsonEncode(expenseCategories));
-   // _getExpenses();
  }
 
   @override
   Widget build(BuildContext context) {
-    _getExpenseCategories();
     return Scaffold(
         appBar: AppBar(
           title: const Text('Add Expense'),
@@ -128,6 +130,28 @@ class _AddExpenseState extends State<AddExpense> {
                               labelText: 'Expense Amount',
                             ),
                           ),
+                          DropdownButton<String>(
+                            value: selectedCurrency,
+                            icon: const Icon(Icons.arrow_downward),
+                            elevation: 16,
+                            style: const TextStyle(color: Colors.deepPurple),
+                            underline: Container(
+                              height: 2,
+                              color: Colors.deepPurpleAccent,
+                            ),
+                            onChanged: (String newValue) {
+                              setState(() {
+                                selectedCurrency = newValue;
+                              });
+                            },
+                            items: currencies
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                          ),
                           Column(
                             children: [
                               DropdownButton<dynamic>(
@@ -146,7 +170,7 @@ class _AddExpenseState extends State<AddExpense> {
                                 },
                                 items: expenseCategories
                                     .map<DropdownMenuItem<dynamic>>((dynamic value) {
-                                  return DropdownMenuItem<String>(
+                                  return DropdownMenuItem<dynamic>(
                                     value: value,
                                     child: Text(value),
                                   );
@@ -154,7 +178,7 @@ class _AddExpenseState extends State<AddExpense> {
                               )
                             ],
                           ),
-                          _FormDatePicker(
+                          FormDatePicker(
                             date: createdOn,
                             onChanged: (value) {
                               setState(() {
@@ -190,63 +214,6 @@ class _AddExpenseState extends State<AddExpense> {
             ),
           ),
         ),
-    );
-  }
-}
-
-class _FormDatePicker extends StatefulWidget {
-  final DateTime date;
-  final ValueChanged<DateTime> onChanged;
-
-  const _FormDatePicker({
-    this.date,
-    this.onChanged,
-  });
-
-  @override
-  _FormDatePickerState createState() => _FormDatePickerState();
-}
-
-class _FormDatePickerState extends State<_FormDatePicker> {
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Text(
-              'Date',
-              style: Theme.of(context).textTheme.bodyText1,
-            ),
-            Text(
-              intl.DateFormat.yMd().format(widget.date),
-              style: Theme.of(context).textTheme.subtitle1,
-            ),
-          ],
-        ),
-        TextButton(
-          child: const Text('Edit'),
-          onPressed: () async {
-            var newDate = await showDatePicker(
-              context: context,
-              initialDate: widget.date,
-              firstDate: DateTime(1900),
-              lastDate: DateTime(2100),
-            );
-
-            // Don't change the date if the date picker returns null.
-            if (newDate == null) {
-              return;
-            }
-           
-            widget.onChanged(newDate);
-          },
-        ),
-      ],
     );
   }
 }
