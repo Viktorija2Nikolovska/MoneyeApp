@@ -206,105 +206,108 @@ class _IncomeState extends State<Income> {
           child: Icon(Icons.add),
           onPressed: _showAddIncomeForm,
         ),
-        body: Column(mainAxisSize: MainAxisSize.min, children: [
-          Container(
-              margin: EdgeInsets.only(top: 25),
-              padding: EdgeInsets.only(bottom: 10, left: 15),
-              child: Align(
+        body: SingleChildScrollView(
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Container(
+                margin: EdgeInsets.only(top: 25),
+                padding: EdgeInsets.only(bottom: 10, left: 15),
+                child: Align(
+                    alignment: Alignment.topLeft,
+                    child: Text("Income sources",
+                        style: TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.bold)))),
+            SizedBox(
+                height: MediaQuery.of(context).size.height / 4,
+                child: ListView.builder(
+                    itemCount: incomeSources.length,
+                    itemBuilder: (context, index) {
+                      return Card(
+                          child: Column(children: [
+                        ListTile(
+                            leading: Icon(Icons.access_time_filled, size: 35),
+                            title: Container(
+                                child: Text(
+                                    incomeSources[index]["amount"].toString() +
+                                        incomeSources[index]["currency"]
+                                            .toString(),
+                                    style: TextStyle(
+                                        fontSize: 27,
+                                        fontWeight: FontWeight.bold))),
+                            subtitle: Text(
+                                incomeSources[index]["workplace"].toString() +
+                                    "\n" +
+                                    incomeSources[index]["position"].toString(),
+                                style: TextStyle(fontSize: 21)),
+                            trailing: Container(
+                                child: IconButton(
+                                    icon: Icon(Icons.delete,
+                                        color: Colors.red, size: 35),
+                                    onPressed: () {
+                                      setState(() {
+                                        incomeSources.removeAt(index);
+                                      });
+                                      _setIncomeSources();
+                                    })))
+                      ]));
+                    })),
+            Container(
+                margin: EdgeInsets.only(top: 50),
+                padding: EdgeInsets.only(bottom: 10, left: 15, right: 20),
+                child: Align(
                   alignment: Alignment.topLeft,
-                  child: Text("Income sources",
-                      style: TextStyle(
-                          fontSize: 24, fontWeight: FontWeight.bold)))),
-          SizedBox(
-              height: MediaQuery.of(context).size.height / 4,
-              child: ListView.builder(
-                  itemCount: incomeSources.length,
-                  itemBuilder: (context, index) {
-                    return Card(
-                        child: Column(children: [
-                      ListTile(
-                          leading: Icon(Icons.access_time_filled, size: 35),
-                          title: Container(
-                              child: Text(
-                                  incomeSources[index]["amount"].toString() +
-                                      incomeSources[index]["currency"]
-                                          .toString(),
-                                  style: TextStyle(
-                                      fontSize: 27,
-                                      fontWeight: FontWeight.bold))),
-                          subtitle: Text(
-                              incomeSources[index]["workplace"].toString() +
-                                  "\n" +
-                                  incomeSources[index]["position"].toString(),
-                              style: TextStyle(fontSize: 21)),
-                          trailing: Container(
-                              child: IconButton(
-                                  icon: Icon(Icons.delete,
-                                      color: Colors.red, size: 35),
-                                  onPressed: () {
-                                    setState(() {
-                                      incomeSources.removeAt(index);
-                                    });
-                                    _setIncomeSources();
-                                  })))
-                    ]));
-                  })),
-          Container(
-              margin: EdgeInsets.only(top: 50),
-              padding: EdgeInsets.only(bottom: 10, left: 15, right: 20),
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("Income logs",
-                          style: TextStyle(
-                              fontSize: 24, fontWeight: FontWeight.bold)),
-                      ElevatedButton(
-                          child: Text("CLEAR", style: TextStyle(fontSize: 16)),
-                          onPressed: () {
-                            setState(() {
-                              incomeList = [];
-                            });
-                            _setIncomeList();
-                          },
-                          style:
-                              ElevatedButton.styleFrom(primary: Colors.green))
-                    ]),
-              )),
-          SizedBox(
-              height: MediaQuery.of(context).size.height / 2,
-              child: ListView.builder(
-                  itemCount: incomeList.length,
-                  itemBuilder: (context, index) {
-                    return Card(
-                        child: Column(children: [
-                      ListTile(
-                          leading: Icon(Icons.access_time_filled, size: 35),
-                          title: Container(
-                              child: Text(
-                                  incomeList[index]["amount"].toString() +
-                                      incomeList[index]["currency"],
-                                  style: TextStyle(
-                                      fontSize: 27,
-                                      fontWeight: FontWeight.bold))),
-                          subtitle: Text(
-                              incomeList[index]["workplace"].toString() +
-                                  "\n" +
-                                  incomeList[index]["date"].toString(),
-                              style: TextStyle(fontSize: 21)),
-                          trailing: Container(
-                              child: IconButton(
-                                  icon: Icon(Icons.delete,
-                                      color: Colors.red, size: 35),
-                                  onPressed: () {
-                                    setState(() {
-                                      incomeList.removeAt(index);
-                                    });
-                                    _setIncomeList();
-                                  })))
-                    ]));
-                  }))
-        ]));
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("Income logs",
+                            style: TextStyle(
+                                fontSize: 24, fontWeight: FontWeight.bold)),
+                        ElevatedButton(
+                            child:
+                                Text("CLEAR", style: TextStyle(fontSize: 16)),
+                            onPressed: () {
+                              setState(() {
+                                incomeList = [];
+                              });
+                              _setIncomeList();
+                            },
+                            style:
+                                ElevatedButton.styleFrom(primary: Colors.green))
+                      ]),
+                )),
+            SizedBox(
+                height: MediaQuery.of(context).size.height / 2,
+                child: ListView.builder(
+                    itemCount: incomeList.length,
+                    itemBuilder: (context, index) {
+                      return Card(
+                          child: Column(children: [
+                        ListTile(
+                            leading: Icon(Icons.access_time_filled, size: 35),
+                            title: Container(
+                                child: Text(
+                                    incomeList[index]["amount"].toString() +
+                                        incomeList[index]["currency"],
+                                    style: TextStyle(
+                                        fontSize: 27,
+                                        fontWeight: FontWeight.bold))),
+                            subtitle: Text(
+                                incomeList[index]["workplace"].toString() +
+                                    "\n" +
+                                    incomeList[index]["date"].toString(),
+                                style: TextStyle(fontSize: 21)),
+                            trailing: Container(
+                                child: IconButton(
+                                    icon: Icon(Icons.delete,
+                                        color: Colors.red, size: 35),
+                                    onPressed: () {
+                                      setState(() {
+                                        incomeList.removeAt(index);
+                                      });
+                                      _setIncomeList();
+                                    })))
+                      ]));
+                    }))
+          ]),
+        ));
   }
 }

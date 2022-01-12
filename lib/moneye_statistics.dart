@@ -119,95 +119,97 @@ class _StatisticsState extends State<Statistics> {
     return Scaffold(
         appBar:
             AppBar(title: Text("Statistics", style: TextStyle(fontSize: 27))),
-        body: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-                margin: EdgeInsets.only(
-                    top: MediaQuery.of(context).size.height / 11.5),
-                padding: EdgeInsets.only(bottom: 10, left: 15),
-                child: Align(
-                    alignment: Alignment.topLeft,
-                    child: Text("Expenses",
-                        style: TextStyle(
-                            fontSize: 25, fontWeight: FontWeight.bold)))),
-            Container(
-              margin: EdgeInsets.only(top: 45, left: 20),
-              child: PieChart(
-                  dataMap: expensesMap,
-                  animationDuration: Duration(milliseconds: 1300),
-                  chartLegendSpacing: 32,
-                  chartRadius: MediaQuery.of(context).size.width / 1.9,
-                  colorList: expensesColorList,
-                  initialAngleInDegree: 0,
-                  chartType: ChartType.ring,
-                  ringStrokeWidth: 30,
-                  legendOptions: LegendOptions(
-                    showLegendsInRow: false,
-                    legendPosition: LegendPosition.right,
-                    showLegends: true,
-                    legendShape: BoxShape.circle,
-                    legendTextStyle: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+        body: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                  margin: EdgeInsets.only(
+                      top: MediaQuery.of(context).size.height / 11.5),
+                  padding: EdgeInsets.only(bottom: 10, left: 15),
+                  child: Align(
+                      alignment: Alignment.topLeft,
+                      child: Text("Expenses",
+                          style: TextStyle(
+                              fontSize: 25, fontWeight: FontWeight.bold)))),
+              Container(
+                margin: EdgeInsets.only(top: 45, left: 20),
+                child: PieChart(
+                    dataMap: expensesMap,
+                    animationDuration: Duration(milliseconds: 1300),
+                    chartLegendSpacing: 32,
+                    chartRadius: MediaQuery.of(context).size.width / 1.9,
+                    colorList: expensesColorList,
+                    initialAngleInDegree: 0,
+                    chartType: ChartType.ring,
+                    ringStrokeWidth: 30,
+                    legendOptions: LegendOptions(
+                      showLegendsInRow: false,
+                      legendPosition: LegendPosition.right,
+                      showLegends: true,
+                      legendShape: BoxShape.circle,
+                      legendTextStyle: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  chartValuesOptions: ChartValuesOptions(
-                      showChartValueBackground: true,
-                      showChartValues: true,
-                      showChartValuesInPercentage: true,
-                      showChartValuesOutside: false,
-                      decimalPlaces: 2,
-                      chartValueStyle: TextStyle(
-                          color: Colors.black,
-                          backgroundColor: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold),
-                      chartValueBackgroundColor: Colors.white)),
-            ),
-            Container(
-                margin: EdgeInsets.only(top: 75),
-                padding: EdgeInsets.only(bottom: 10, left: 15),
-                child: Align(
-                    alignment: Alignment.topLeft,
-                    child: Text("Income",
-                        style: TextStyle(
-                            fontSize: 25, fontWeight: FontWeight.bold)))),
-            Container(
-              margin: EdgeInsets.only(top: 45, left: 20),
-              child: PieChart(
-                  dataMap: incomeMap,
-                  animationDuration: Duration(milliseconds: 1300),
-                  chartLegendSpacing: 32,
-                  chartRadius: MediaQuery.of(context).size.width / 1.9,
-                  colorList: incomeColorList,
-                  initialAngleInDegree: 0,
-                  chartType: ChartType.ring,
-                  ringStrokeWidth: 30,
-                  legendOptions: LegendOptions(
-                    showLegendsInRow: false,
-                    legendPosition: LegendPosition.right,
-                    showLegends: true,
-                    legendShape: BoxShape.circle,
-                    legendTextStyle: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                    chartValuesOptions: ChartValuesOptions(
+                        showChartValueBackground: true,
+                        showChartValues: true,
+                        showChartValuesInPercentage: true,
+                        showChartValuesOutside: false,
+                        decimalPlaces: 2,
+                        chartValueStyle: TextStyle(
+                            color: Colors.black,
+                            backgroundColor: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold),
+                        chartValueBackgroundColor: Colors.white)),
+              ),
+              Container(
+                  margin: EdgeInsets.only(top: 75),
+                  padding: EdgeInsets.only(bottom: 10, left: 15),
+                  child: Align(
+                      alignment: Alignment.topLeft,
+                      child: Text("Income",
+                          style: TextStyle(
+                              fontSize: 25, fontWeight: FontWeight.bold)))),
+              Container(
+                margin: EdgeInsets.only(top: 45, left: 20),
+                child: PieChart(
+                    dataMap: incomeMap,
+                    animationDuration: Duration(milliseconds: 1300),
+                    chartLegendSpacing: 32,
+                    chartRadius: MediaQuery.of(context).size.width / 1.9,
+                    colorList: incomeColorList,
+                    initialAngleInDegree: 0,
+                    chartType: ChartType.ring,
+                    ringStrokeWidth: 30,
+                    legendOptions: LegendOptions(
+                      showLegendsInRow: false,
+                      legendPosition: LegendPosition.right,
+                      showLegends: true,
+                      legendShape: BoxShape.circle,
+                      legendTextStyle: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  chartValuesOptions: ChartValuesOptions(
-                      showChartValueBackground: true,
-                      showChartValues: true,
-                      showChartValuesInPercentage: true,
-                      showChartValuesOutside: false,
-                      decimalPlaces: 2,
-                      chartValueStyle: TextStyle(
-                          color: Colors.black,
-                          backgroundColor: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold),
-                      chartValueBackgroundColor: Colors.white)),
-            )
-          ],
+                    chartValuesOptions: ChartValuesOptions(
+                        showChartValueBackground: true,
+                        showChartValues: true,
+                        showChartValuesInPercentage: true,
+                        showChartValuesOutside: false,
+                        decimalPlaces: 2,
+                        chartValueStyle: TextStyle(
+                            color: Colors.black,
+                            backgroundColor: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold),
+                        chartValueBackgroundColor: Colors.white)),
+              )
+            ],
+          ),
         ));
   }
 }

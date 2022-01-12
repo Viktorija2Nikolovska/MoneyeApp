@@ -1,12 +1,16 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:intl/intl.dart';
+import 'package:planner/moneye_camera.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'moneye_balance.dart';
 import 'moneye_budget.dart';
 import 'moneye_expenses.dart';
 import 'moneye_income.dart';
+import 'moneye_map.dart';
 import 'moneye_savings.dart';
 import 'moneye_statistics.dart';
 
@@ -17,8 +21,12 @@ typedef BudgetCallback = void Function(double budget);
 typedef SavingsCallback = void Function(double savingsAmount);
 
 class Moneye extends StatefulWidget {
+  final List<CameraDescription> cameras;
+
+  const Moneye(this.cameras);
+
   @override
-  State<Moneye> createState() => _MoneyeState();
+  State<Moneye> createState() => _MoneyeState(this.cameras);
 }
 
 class _MoneyeState extends State<Moneye> {
@@ -37,6 +45,17 @@ class _MoneyeState extends State<Moneye> {
 
   double budgetPercentage = 0.000;
   double savingsPercentage = 0.000;
+
+  final List<CameraDescription> cameras;
+
+  LocationSettings locationSettings = AndroidSettings(
+    accuracy: LocationAccuracy.high,
+    distanceFilter: 100,
+    forceLocationManager: true,
+    intervalDuration: const Duration(seconds: 10),
+  );
+
+  _MoneyeState(this.cameras);
 
   @override
   void initState() {
@@ -202,6 +221,47 @@ class _MoneyeState extends State<Moneye> {
     _setFinancialData("currentSavingsAmount", savingsAmount);
   }
 
+  Future<Position> _determineCurrentPosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    return await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+  }
+
+  void _viewMap() async {
+    Position pos = await _determineCurrentPosition();
+
+    double lat = pos.latitude;
+    double lng = pos.longitude;
+
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => MyMap(lat, lng)));
+  }
+
+  void _openCamera() {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => CameraScreen(cameras)));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -226,6 +286,18 @@ class _MoneyeState extends State<Moneye> {
                   icon: Icon(Icons.equalizer),
                   onPressed: _showStatistics,
                 )),
+            Tooltip(
+                message: "View map",
+                child: IconButton(
+                  icon: Icon(Icons.location_on_outlined),
+                  onPressed: _viewMap,
+                )),
+            Tooltip(
+                message: "Open camera",
+                child: IconButton(
+                  icon: Icon(Icons.camera),
+                  onPressed: _openCamera,
+                )),
             Padding(
               padding: EdgeInsets.only(left: 15),
               child: IconButton(
@@ -236,130 +308,134 @@ class _MoneyeState extends State<Moneye> {
             )
           ],
         ),
-        body: Container(
-          padding: EdgeInsets.all(25),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Container(
-                  margin: EdgeInsets.only(bottom: 75),
-                  child: Center(
-                      child: Text(date, style: TextStyle(fontSize: 15)))),
-              Container(
-                  margin: EdgeInsets.only(bottom: 15),
-                  child: Text(
-                      "Total expenses: " +
-                          totalExpenses.toStringAsFixed(1).toString() +
-                          "EUR",
-                      style: TextStyle(fontSize: 25))),
-              Container(
-                  margin: EdgeInsets.only(bottom: 105),
-                  child: Text(
-                      "Total income: " +
-                          totalIncome.toStringAsFixed(1).toString() +
-                          "EUR",
-                      style: TextStyle(fontSize: 25))),
-              Container(
-                  margin: EdgeInsets.only(bottom: 75),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                          "Balance: " +
-                              currentBalance.toStringAsFixed(1) +
-                              "EUR",
-                          style: TextStyle(
-                              fontSize: 26, fontWeight: FontWeight.bold)),
-                      ElevatedButton(
-                          child: Text("Set", style: TextStyle(fontSize: 16)),
-                          onPressed: _balanceForm,
-                          style:
-                              ElevatedButton.styleFrom(primary: Colors.green))
-                    ],
-                  )),
-              Container(
-                child: Card(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ListTile(
-                          minVerticalPadding: 20,
-                          leading: Icon(Icons.attach_money, size: 50),
-                          title: Text(
-                              "Budget: " +
-                                  currentBudget.toStringAsFixed(1) +
-                                  "EUR / " +
-                                  initialBudget.toStringAsFixed(1) +
-                                  "EUR",
-                              style: TextStyle(fontSize: 24)),
-                          subtitle: Padding(
+        body: SingleChildScrollView(
+          child: Container(
+            padding: EdgeInsets.all(25),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Container(
+                    margin: EdgeInsets.only(bottom: 75),
+                    child: Center(
+                        child: Text(date, style: TextStyle(fontSize: 15)))),
+                Container(
+                    margin: EdgeInsets.only(bottom: 15),
+                    child: Text(
+                        "Total expenses: " +
+                            totalExpenses.toStringAsFixed(1).toString() +
+                            "EUR",
+                        style: TextStyle(fontSize: 25))),
+                Container(
+                    margin: EdgeInsets.only(bottom: 105),
+                    child: Text(
+                        "Total income: " +
+                            totalIncome.toStringAsFixed(1).toString() +
+                            "EUR",
+                        style: TextStyle(fontSize: 25))),
+                Container(
+                    margin: EdgeInsets.only(bottom: 75),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                            "Balance: " +
+                                currentBalance.toStringAsFixed(1) +
+                                "EUR",
+                            style: TextStyle(
+                                fontSize: 26, fontWeight: FontWeight.bold)),
+                        ElevatedButton(
+                            child: Text("Set", style: TextStyle(fontSize: 16)),
+                            onPressed: _balanceForm,
+                            style:
+                                ElevatedButton.styleFrom(primary: Colors.green))
+                      ],
+                    )),
+                Container(
+                  child: Card(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ListTile(
+                            minVerticalPadding: 20,
+                            leading: Icon(Icons.attach_money, size: 50),
+                            title: Text(
+                                "Budget: " +
+                                    currentBudget.toStringAsFixed(1) +
+                                    "EUR / " +
+                                    initialBudget.toStringAsFixed(1) +
+                                    "EUR",
+                                style: TextStyle(fontSize: 24)),
+                            subtitle: Padding(
+                                padding: EdgeInsets.only(top: 15),
+                                child: LinearPercentIndicator(
+                                  width:
+                                      MediaQuery.of(context).size.width - 200,
+                                  animation: true,
+                                  lineHeight: 25,
+                                  animationDuration: 2000,
+                                  percent: budgetPercentage,
+                                  center: Text(
+                                      (budgetPercentage * 100)
+                                              .toStringAsFixed(1) +
+                                          "%",
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold)),
+                                  linearStrokeCap: LinearStrokeCap.roundAll,
+                                  progressColor: Colors.greenAccent,
+                                ))),
+                        IconButton(
+                            icon: Icon(Icons.create_rounded),
+                            onPressed: _budgetForm)
+                      ],
+                    ),
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(top: 25),
+                  child: Card(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ListTile(
+                            minVerticalPadding: 20,
+                            leading: Icon(Icons.lock, size: 50),
+                            title: Text(
+                                "Saving amount: " +
+                                    currentSavingsAmount.toStringAsFixed(1) +
+                                    "EUR / " +
+                                    initialSavingsAmount.toStringAsFixed(1) +
+                                    "EUR",
+                                style: TextStyle(fontSize: 24)),
+                            subtitle: Padding(
                               padding: EdgeInsets.only(top: 15),
                               child: LinearPercentIndicator(
                                 width: MediaQuery.of(context).size.width - 200,
                                 animation: true,
                                 lineHeight: 25,
                                 animationDuration: 2000,
-                                percent: budgetPercentage,
+                                percent: savingsPercentage,
                                 center: Text(
-                                    (budgetPercentage * 100)
+                                    (savingsPercentage * 100)
                                             .toStringAsFixed(1) +
                                         "%",
                                     style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold)),
                                 linearStrokeCap: LinearStrokeCap.roundAll,
-                                progressColor: Colors.greenAccent,
-                              ))),
-                      IconButton(
-                          icon: Icon(Icons.create_rounded),
-                          onPressed: _budgetForm)
-                    ],
+                                progressColor: Colors.blue,
+                              ),
+                            )),
+                        IconButton(
+                            icon: Icon(Icons.create_rounded),
+                            onPressed: _savingsForm)
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              Container(
-                margin: EdgeInsets.only(top: 25),
-                child: Card(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ListTile(
-                          minVerticalPadding: 20,
-                          leading: Icon(Icons.lock, size: 50),
-                          title: Text(
-                              "Saving amount: " +
-                                  currentSavingsAmount.toStringAsFixed(1) +
-                                  "EUR / " +
-                                  initialSavingsAmount.toStringAsFixed(1) +
-                                  "EUR",
-                              style: TextStyle(fontSize: 24)),
-                          subtitle: Padding(
-                            padding: EdgeInsets.only(top: 15),
-                            child: LinearPercentIndicator(
-                              width: MediaQuery.of(context).size.width - 200,
-                              animation: true,
-                              lineHeight: 25,
-                              animationDuration: 2000,
-                              percent: savingsPercentage,
-                              center: Text(
-                                  (savingsPercentage * 100).toStringAsFixed(1) +
-                                      "%",
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold)),
-                              linearStrokeCap: LinearStrokeCap.roundAll,
-                              progressColor: Colors.blue,
-                            ),
-                          )),
-                      IconButton(
-                          icon: Icon(Icons.create_rounded),
-                          onPressed: _savingsForm)
-                    ],
-                  ),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ));
   }

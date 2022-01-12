@@ -1,6 +1,11 @@
-# Planner
+# Moneye
 
-A new Flutter project created with [FlutLab](https://flutlab.io)
+Cross-platform money management mobile application written in Flutter.
+
+- In order for the application to work, you need to create a Google API key that will be associated with a project in your Google Cloud account. For that, visit https://developers.google.com/maps/documentation/javascript/get-api-key.
+- After you create your API key, make sure the Places, Maps Static, SDK for IOS & Android and Distances APIs are enabled in your Google Cloud project.
+- After you ensure that the APIs are enabled, edit the Android manifest .xml file and replace "YOUR_API_KEY" with your Google API key.
+- Also, in the lib folder, create a file called "moneye_secrets.dart" and add your Google API key in a static const String variable.
 
 ### Getting Started: FlutLab - Flutter Online IDE
 

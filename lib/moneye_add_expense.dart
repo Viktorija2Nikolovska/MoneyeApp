@@ -187,9 +187,15 @@ class _AddExpenseState extends State<AddExpense> {
                             setState(() {
                               setState(() {
                                 createdOn = value;
-                                formattedDate =
-                                    intl.DateFormat('dd/MM/yyyy kk:mm')
-                                        .format(createdOn);
+                                DateTime now = DateTime.now();
+                                String time =
+                                    intl.DateFormat("dd/MM/yyyy kk:mm")
+                                        .format(now)
+                                        .split(" ")[1];
+                                formattedDate = intl.DateFormat('dd/MM/yyyy')
+                                        .format(createdOn) +
+                                    " " +
+                                    time;
                               });
                             });
                           },
